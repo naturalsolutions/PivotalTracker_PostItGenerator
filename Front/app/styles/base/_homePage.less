@@ -13,12 +13,52 @@ h2{
 	font-size: 30px;
 }
 
+.home-page{
+	.block1{
+		background: red;
+	}
+	.block2{
+		background: green;
+	}
+	.rightHeader{
+		background: purple;
+		width: 100%;
+		max-height: 50px;
+		overflow: hidden;
+		.btn{
+			margin-top: 10px;
+			margin-bottom: 10px;
+		}
+	}
+}
+
+
+.onePostItContainer{
+	height:210.5pt;
+	overflow: hidden;
+	outline: 1px solid black;
+	padding: 5px;
+	.topContainer{
+		height: 16.6%;
+	}
+	.projectContainer{
+		height: 16.6%;
+	}
+	.StoryTitleContainer{
+		height: 50%;
+	}
+	.MembershipContainer{
+		height: 16.6%;
+	}
+
+}
+
 @media screen and (min-width: @screen-sm) and (max-width: 1199px){
 	.home-page{
 
 		.container{
 			width: 750px!important;
-		}		
+		}
 		div.wrapper{
 			width: 515px;
 			margin: 0 auto;
@@ -26,7 +66,7 @@ h2{
 		.tile{
 			&.first{
 				margin-left: 15px;
-			} 
+			}
 			&.last{
 				margin-left: 15px;
 			}

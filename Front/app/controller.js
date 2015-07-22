@@ -1,24 +1,24 @@
-define(['marionette', 'config', 
-
+define(['marionette', 'config',
 	'./base/home/lyt-home',
+	],function( Marionette, config,
+		LytHome
+		){
+		'use strict';
+		return Marionette.Object.extend({
 
-],function( Marionette, config, 
-	LytHome
+			initialize: function(){
+				this.rgMain=this.options.app.rootView.rgMain;
+				this.rgHeader=this.options.app.rootView.rgHeader;
+				this.rgFooter=this.options.app.rootView.rgFooter;
+			},
 
-){
-	'use strict';
-	return Marionette.Object.extend({
+			home: function() {
+				Backbone.history.navigate('');
+				this.rgMain.show(new LytHome());
 
-		initialize: function(){
-			this.rgMain=this.options.app.rootView.rgMain;
-			this.rgHeader=this.options.app.rootView.rgHeader;
-			this.rgFooter=this.options.app.rootView.rgFooter;
 		},
 
-		home: function() {
-			Backbone.history.navigate('');
-			this.rgMain.show(new LytHome());
-		},
+
 
 	});
 });

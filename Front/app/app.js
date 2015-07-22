@@ -9,16 +9,22 @@ function(Marionette, Lyt_rootview, Router, Controller) {
 		return JST[template](data);
 	};
 
+
+
+
 	app = new Marionette.Application();
+
+
 
 	app.on('start', function() {
 		app.rootView = new Lyt_rootview();
 		app.rootView.render();
 		app.controller = new Controller({app : app});
 		app.router = new Router({controller: app.controller, app: app});
-		
 		Backbone.history.start();
 	});
+
+
 
 	$( document ).ajaxStart(function(e) {
 		$('#header-loader').removeClass('hidden');

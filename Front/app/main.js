@@ -1,9 +1,9 @@
-require.config({ 
+require.config({
 	baseUrl: 'app',
 	paths : {
-		
+
 		'tmp'					: './tmp',
-		
+
 		'app'					: 'app',
 		'config'				: 'config',
 		'router'				: 'router',
@@ -13,9 +13,9 @@ require.config({
 		'templates'				: '../build/templates',
 		'lyt-rootview'			: './base/rootview/lyt-rootview',
 		'transition-region'		: './base/transition-region/transition-region',
-		'translater'            : 'translater', 
-		
-		
+		'translater'            : 'translater',
+
+
 		/*==========  NS modules  ==========*/
 		'ns_modules'			: 'ns_modules',
 		'ns_filter'				: 'ns_modules/ns_filter',
@@ -36,12 +36,14 @@ require.config({
 		'radio'					: '../bower_components/backbone.radio/build/backbone.radio',
 		'bootstrap'				: '../bower_components/bootstrap/dist/js/bootstrap',
 		'sha1'					: '../bower_components/sha1/bin/sha1',
-		
+
 		'requirejs-text'		: '../bower_components/requirejs-text/text',
 
-		
+
 		'i18n'					: '../bower_components/i18n/i18next',
-		
+
+		'print'					: 'modules/jQuery.print',
+
 	},
 
 
@@ -76,8 +78,12 @@ require.config({
 		sha1: {
 			exports: 'sha1'
 		},
-		
+
 		i18n : {
+			deps: ['jquery'],
+			exports : '$'
+		},
+		print : {
 			deps: ['jquery'],
 			exports : '$'
 		},

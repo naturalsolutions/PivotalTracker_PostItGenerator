@@ -1,0 +1,29 @@
+
+<div class="onePostItContainer <% if(FirstPostion){%>firstPosition<%}%>">
+	<div class="row topContainer">
+		<div class="col-xs-6 text-left">
+
+		</div>
+		<div class="col-xs-6 text-right">
+			<%= story_id %>
+		</div>
+	</div>
+	<div class="row projectContainer">
+		<div class="col-xs-12 text-center">
+			<%= project_name %>
+		</div>
+	</div>
+	<div class="row StoryTitleContainer">
+		<div class="col-xs-12 text-center">
+			<%= description %>
+		</div>
+	</div>
+	<div class="row MembershipContainer">
+		<div class="col-xs-6 text-left">
+			<%= (owner_initial.length == 0 ? "und" : owner_initial) %>
+		</div>
+		<div class="col-xs-6 text-right">
+			<%= duree %>
+		</div>
+	</div>
+</div>
