@@ -11,3 +11,34 @@
 @import './base/_loginPage.less';
 @import './base/_homePage.less';
 @import './base/_header.less';
+
+
+
+
+@media print{
+	html, body, main, .full-height, .ns-full-height{
+		overflow: auto;
+		height: inherit;
+		padding: 0px;
+		margin: 0px;
+	}
+
+	.block1{
+		display: none;
+	}
+
+	.block2{
+		.rightHeader{
+			//display: none;
+		}
+		width: 100%;
+	}
+
+	.onePostItContainer{
+		/* width: 186pt;
+		height:197pt; */
+		width:185pt;
+		height:25%;
+
+	}
+}

@@ -1,4 +1,4 @@
-define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../../modules/PT_initHome','print'],
+define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../../modules/PT_initHome','../../modules/PT_postIt','print'],
 	function($,_,Marionette, Backbone) {
 		'use strict';
 
@@ -96,9 +96,9 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				var allStories ;
 				if(_this.ui.scope == "" || _this.ui.scope === undefined){
 					scope = 'current';
-					allStories = getStoriesByIteration("536841","1674902",scope, _this.postItMemory.projectMember);
+					allStories = getStoriesByIteration("536841","1674902",scope, _this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}else if(_this.ui.iterationScope != 'icebox'){
-					allStories = getStoriesByIteration("536841","1674902",scope, _this.postItMemory.projectMember);
+					allStories = getStoriesByIteration("536841","1674902",scope, _this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}else{
 					//TODO :: getStoriesFromIcebox
 				}
@@ -142,9 +142,9 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				var allStories ;
 				if(scope == "" || scope === undefined){
 					scope = 'current';
-					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember);
+					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}else if(_this.ui.iterationScope != 'icebox'){
-					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember);
+					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}else{
 					//TODO :: getStoriesFromIcebox
 				}
@@ -242,7 +242,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 						}
 					});
 				}else{
-					var tasks = getTasksByStory(_this.postItMemory.projectId,storyId);
+					var tasks = getTasksByStory(_this.postItMemory.projectId,storyId,_this.postItMemory.memberInitial,_this.postItMemory.projectName);
 					if(tasks.length >0){
 						$.each(_this.postItMemory.relativStories,function(){
 							if(this.id == storyId){
@@ -269,46 +269,14 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				}
 				_this.ui.rightHeader.children().find('button').removeAttr('disabled');
 				_this.ui.btPrint.removeAttr('disabled');
-				var StoryModel = Backbone.Model.extend({});
+				/*var StoryModel = Backbone.Model.extend({});*/
 				var selectedSories = [];
 				$.each(_this.postItMemory.relativStories, function(){
 					if(this.isInSprint){
 						selectedSories.push(this);
 					}
 				});
-				var StoryColl = Backbone.Collection.extend({
-					model: StoryModel,
-				});
-
-				var StoryChildView = Backbone.Marionette.ItemView.extend({
-					//tagName: "div",
-					template: 'app/base/home/tpl/tpl-postItStory.html',
-
-					serializeData : function() {
-
-						var modelSerialized = this.model.toJSON();
-						//	Add extra option
-						modelSerialized['owner_initial'] = _this.postItMemory.memberInitial;
-						modelSerialized['project_name'] = _this.postItMemory.projectName;
-						return modelSerialized;
-					},
-					onRender:function(){
-						this.$el.addClass('col-md-4');
-					}
-
-				});
-
-				var StoryCollectionView = Backbone.Marionette.CollectionView.extend({
-					//tagName: 'div',
-					childView: StoryChildView,
-					childViewContainer: "#allPostIt",
-					template: 'app/base/home/tpl/tpl-postItContainer.html'
-				});
-				var storyColl = new StoryColl(selectedSories);
-				var storyCollView = new StoryCollectionView({ collection: storyColl  });
-
-				storyCollView.render();
-				$("#postItContainer").append(storyCollView.el);
+				drawStoryPostIt(selectedSories,$("#postItContainer"));
 			},
 
 			//Cré les post it sur l'écran de droite
@@ -317,7 +285,6 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				if(_this.ui.postItContainer.children().length){
 					_this.ui.postItContainer.children().remove();
 				}
-				var TaskModel = Backbone.Model.extend({});
 				var selectedTasks = [];
 				$.each(_this.postItMemory.relativStories, function(){
 					if(this.isInSprint){
@@ -328,42 +295,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 						});
 					}
 				});
-				var TaskColl = Backbone.Collection.extend({
-					model: TaskModel,
-				});
-
-				var TaskChildView = Backbone.Marionette.ItemView.extend({
-					//tagName: "div",
-					template: 'app/base/home/tpl/tpl-postItTache.html',
-					serializeData : function() {
-
-						var modelSerialized = this.model.toJSON();
-						//	Add extra option
-						modelSerialized['owner_initial'] = _this.postItMemory.memberInitial;
-						modelSerialized['project_name'] = _this.postItMemory.projectName;
-						console.log(this.model.collection.length);
-						modelSerialized['FirstPostion'] = this.model.get('position') % 3 == 1;
-						return modelSerialized;
-					},
-					onRender:function(){
-						this.$el.addClass('col-md-4');
-					}
-				});
-
-				var TaskCollectionView = Backbone.Marionette.CollectionView.extend({
-					//tagName: 'div',
-					childView: TaskChildView,
-					childViewContainer: "#allPostIt",
-					template: 'app/base/home/tpl/tpl-postItContainer.html',
-					onRender:function(){
-						this.$el.addClass('row');
-					}
-				});
-				var taskColl = new TaskColl(selectedTasks);
-				var taskCollView = new TaskCollectionView({ collection: taskColl  });
-
-				taskCollView.render();
-				$("#postItContainer").append(taskCollView.el);
+				drawTaskPostIt(selectedTasks,$("#postItContainer"));
 			},
 
 			createTachePPPostIt: function(e){
@@ -371,7 +303,6 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				if(_this.ui.postItContainer.children().length){
 					_this.ui.postItContainer.children().remove();
 				}
-				var TaskModel = Backbone.Model.extend({});
 				var selectedTasks = [];
 				$.each(_this.postItMemory.relativStories, function(){
 					if(this.isInSprint){
@@ -382,41 +313,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 						});
 					}
 				});
-				var TaskColl = Backbone.Collection.extend({
-					model: TaskModel,
-				});
-
-				var TaskChildView = Backbone.Marionette.ItemView.extend({
-					//tagName: "div",
-					template: 'app/base/home/tpl/tpl-postItTache.html',
-					serializeData : function() {
-
-						var modelSerialized = this.model.toJSON();
-						//	Add extra option
-						modelSerialized['project_name'] = _this.postItMemory.projectName;
-
-						modelSerialized['FirstPostion'] = this.model.get('position') % 3 == 1;
-
-						return modelSerialized;
-					},
-					onRender:function(){
-						this.$el.addClass('col-md-4');
-					}
-				});
-				var TaskCollectionView = Backbone.Marionette.CollectionView.extend({
-					//tagName: 'div',
-					childView: TaskChildView,
-					childViewContainer: "#allPostIt",
-					template: 'app/base/home/tpl/tpl-postItContainer.html',
-					onRender:function(){
-						this.$el.addClass('row');
-					}
-				});
-				var taskColl = new TaskColl(selectedTasks);
-				var taskCollView = new TaskCollectionView({ collection: taskColl  });
-
-				taskCollView.render();
-				$("#postItContainer").append(taskCollView.el);
+				drawTaskPostIt(selectedTasks,$("#postItContainer"));
 			},
 
 			//Valid ou non la szelection des taches pour cette story
@@ -455,9 +352,61 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 			},
 
 			printPostIt1:function(e){
-
 				var _this = this;
-				_this.ui.postItContainer.children().print({stylesheet:'app/styles/externalCssPrintable.css'});
+				var pageConter = {
+					pStory : 0,
+					pTask : 0,
+					pTaskPP : 0,
+				}
+				$("#postItContainer").children().remove();
+				/******************************************************************/
+				//AFFICHAGE DE TOUTE LES STORIES + COMPLéTION SI MANQUANTE (vide)
+
+				var selectedSories = [];
+				$.each(_this.postItMemory.relativStories, function(){
+					if(this.isInSprint){
+						selectedSories.push(this);
+					}
+				});
+				var addBlanckDiv = '';
+
+				drawStoryPostIt(selectedSories,$("#postItContainer"),true);
+				pageConter.pStory = Math.ceil(selectedSories.length / 12);
+
+				/*****************************************************************************/
+				//AFFICHAGE DE TACHES NORMALE PLUS COMPLéTION SI %12 != 0
+				var selectedTasks = [];
+				$.each(_this.postItMemory.relativStories, function(){
+					if(this.isInSprint){
+						$.each(this.tasks,function(){
+							if(this.isInSprint && !this.isPairProg){
+								selectedTasks.push(this);
+							}
+						});
+					}
+				});
+
+				drawTaskPostIt(selectedTasks,$("#postItContainer > div"),true);
+				pageConter.pTask = Math.ceil(selectedTasks.length / 12);
+
+				/*****************************************************************************/
+				//AFFICHAGE DE TACHES PAIRPROG PLUS COMPLéTION SI %12 != 0
+				selectedTasks = [];
+				$.each(_this.postItMemory.relativStories, function(){
+					if(this.isInSprint){
+						$.each(this.tasks,function(){
+							if(this.isInSprint && this.isPairProg){
+								selectedTasks.push(this);
+							}
+						});
+					}
+				});
+
+				drawTaskPostIt(selectedTasks,$("#postItContainer > div"),true)
+				pageConter.pTaskPP = Math.ceil(selectedTasks.length / 12);
+
+				alert('Veuillez insérer : ' + pageConter.pStory + ' feuille orange, ' + pageConter.pTask + ' feuille jaune, ' + pageConter.pTaskPP + ' feuille verte.');
+				$("#postItContainer").find('div').print({stylesheet:'app/styles/externalCssPrintable.css'});
 			}
 
 		});

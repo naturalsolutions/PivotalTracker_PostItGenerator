@@ -1,7 +1,7 @@
 /**
 
 	TODO:
-	- set login as marionette.application
+	- set login as marionette.application*
 
 **/
 define(['jquery', 'marionette', 'backbone', 'config'],
@@ -12,7 +12,6 @@ define(['jquery', 'marionette', 'backbone', 'config'],
 		appRoutes: {
 
 			'*route(/:page)': 'home',
-
 		},
 	});
 });

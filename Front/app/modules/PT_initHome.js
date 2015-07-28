@@ -93,7 +93,7 @@ function getStoriesByProjectAndMember(projectId,member){
 ///			member -> id de la personne
 ///			iterationScope -> current,icebox,backlog
 ///Return : [objects] repésentant les stories pour une personne sur un projet
-function getStoriesByIteration(projectId,member,iterationScope, members){
+function getStoriesByIteration(projectId,member,iterationScope, members, projectName){
 	var myStoriesTemp;
 	var myStories = [];
 	console.log(arguments);
@@ -123,6 +123,7 @@ function getStoriesByIteration(projectId,member,iterationScope, members){
 				this.owner_initials = convertIdsToMember(this.owner_ids,members);
 				this.priority = cptPrio;
 				cptPrio ++;
+				this.project_name = projectName;
 				myStories.push(this);
 			}
 		}
@@ -135,7 +136,7 @@ function getStoriesByIteration(projectId,member,iterationScope, members){
 ///Param : projectId -> id du projet dans PT
 ///			storyId -> id de la story dans pt
 ///Return : [objects] repésentant les tache pour une story
-function getTasksByStory(projectId,storyId){
+function getTasksByStory(projectId,storyId, memberInitial, projectName){
 	var mytasks = [];
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/stories/"+storyId+"/tasks",
@@ -174,8 +175,7 @@ function getTasksByStory(projectId,storyId){
 					var owners = ownerBrut[0].split("+");
 				}
 				this.owner_initial = owners;
-				//ATTENTION REMMETRRE A TRUE
-				this.isPairProg = false;
+				this.isPairProg = true;
 			}else{
 				regexPP = /[A-Z]{2}(\+[A-Z]{2})+$/;
 				if(this.description.match(regexPP)){
@@ -190,15 +190,16 @@ function getTasksByStory(projectId,storyId){
 						duree += parseInt(value);
 					});
 					this.duree = duree;
-					//ATTENTION REMMETRRE A TRUE
-					this.isPairProg = false;
+					this.isPairProg = true;
 				}else{
 					regexPP = /(\d)+$/;
 					var tabDureeBrut = regexPP.exec(this.description);
 					this.duree = regexPP.exec(this.description)[0];
+					this.owner_initial = memberInitial;
 					this.isPairProg = false;
 				}
 			}
+			this.project_name = projectName;
 			mytasks.push(this);
 		}
 	});
