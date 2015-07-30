@@ -115,7 +115,6 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
 					_this.ui.btPrint.removeAttr('disabled');
 					_this.ui.btVisu.removeAttr('disabled');
-					_this.ui.icoHasData.removeClass('hidden');
 					console.log(_this.ui.icoHasData);
 				}
 			},

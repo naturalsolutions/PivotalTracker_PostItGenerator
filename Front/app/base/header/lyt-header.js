@@ -26,7 +26,9 @@ function(Marionette, config) {
 		},
 
 		onShow: function(){
-			
+			if(localStorage.getItem('backupedStories') != null){
+				$("#icoHasData").removeClass("hidden");
+			}
 		},
 	});
 });
