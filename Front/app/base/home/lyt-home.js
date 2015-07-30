@@ -17,6 +17,8 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				'click #btTache':'createTachePostIt',
 				'click #btPP':'createTachePPPostIt',
 				'click #btPrint':'printPostIt1',
+				'click #btMemo':'memoriseStory',
+				'click #btVisu':'visualizeMemo'
 			},
 
 
@@ -31,7 +33,10 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				validScrum:'#validScrum',
 				rightHeader:'#rightHeader',
 				postItContainer:'#postItContainer',
-				btPrint: '#btPrint'
+				btPrint: '#btPrint',
+				btMemo: '#btMemo',
+				btVisu: '#btVisu',
+				icoHasData : "#icoHasData"
 			},
 			//Mémoire des infos relative au sprint en cour.
 			postItMemory:{
@@ -44,7 +49,8 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				relativStories : '',
 				projectId : '',
 				projectName : '',
-				projectMember:''
+				projectMember:'',
+				backUpStories: []
 			},
 
 
@@ -105,6 +111,13 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				_this.postItMemory.relativStories = allStories;
 				_this.drawStoriesChoice(allStories);
 				//Fin de trucs a supprimer
+				if(localStorage.getItem('backupedStories') != null){
+					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
+					_this.ui.btPrint.removeAttr('disabled');
+					_this.ui.btVisu.removeAttr('disabled');
+					_this.ui.icoHasData.removeClass('hidden');
+					console.log(_this.ui.icoHasData);
+				}
 			},
 
 			//Récupère les membres du projets sélectionner et les affiches dans la list sltMemberships
@@ -117,6 +130,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				_this.postItMemory.projectId = $(_this.ui.sltProjects).val();
 				_this.postItMemory.projectName = $(_this.ui.sltProjects).find(':selected').text();
 				_this.ui.sltMemberships.children().remove();
+				_this.ui.sltMemberships.append('<option value=""></option>')
 				var memberships = getMembership($(_this.ui.sltProjects).val());
 				_this.postItMemory.projectMember = memberships;
 				$.each(memberships, function(){
@@ -140,6 +154,9 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				var _this = this;
 				var scope = $(_this.ui.iterationScope).children().find('input[type=radio]:checked').val();
 				var allStories ;
+				if($("#divStories").children().length != 0){
+					$("#divStories").children().remove();
+				}
 				if(scope == "" || scope === undefined){
 					scope = 'current';
 					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
@@ -189,12 +206,11 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				});
 
 				var StoryChildView = Backbone.Marionette.ItemView.extend({
-					tagName: "tr",
+					tagName: "ul",
 					template: 'app/base/home/tpl/tpl-littleStory.html',
 				});
 
 				var StoryCollectionView = Backbone.Marionette.CollectionView.extend({
-					tagName: "table",
 					childView: StoryChildView,
 				});
 
@@ -213,12 +229,11 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				});
 
 				var TaskChildView = Backbone.Marionette.ItemView.extend({
-					tagName: "tr",
+					tagName: "ul",
 					template: 'app/base/home/tpl/tpl-littleTask.html',
 				});
 
 				var TaskCollectionView = Backbone.Marionette.CollectionView.extend({
-					tagName: "table",
 					childView: TaskChildView,
 				});
 
@@ -232,10 +247,11 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 			//Récupère toutes les taches d'une story ou les effeces si on nes souhaite pas avoir cette stry
 			getTasks: function(e){
 				var _this = this;
-				var container = $(e.currentTarget).parent().parent();
+				var container = $(e.currentTarget).parent();
+				console.log(container);
 				var storyId = container.attr("id").split("divStoryContainer_")[1];
 				if(container.children().find('div[id^=divTaskContainer_]').length){
-					container.children().find('div[id^=divTaskContainer_]').remove();
+					container.find('div').remove();
 					$.each(_this.postItMemory.relativStories,function(){
 						if(this.id == storyId){
 							this.isInSprint = false;
@@ -269,6 +285,10 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				}
 				_this.ui.rightHeader.children().find('button').removeAttr('disabled');
 				_this.ui.btPrint.removeAttr('disabled');
+					_this.ui.btVisu.removeAttr('disabled');
+				_this.ui.btMemo.removeAttr('disabled');
+				_this.ui.btPrint.removeAttr('disabled');
+					_this.ui.btVisu.removeAttr('disabled');
 				/*var StoryModel = Backbone.Model.extend({});*/
 				var selectedSories = [];
 				$.each(_this.postItMemory.relativStories, function(){
@@ -359,54 +379,53 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					pTaskPP : 0,
 				}
 				$("#postItContainer").children().remove();
-				/******************************************************************/
-				//AFFICHAGE DE TOUTE LES STORIES + COMPLéTION SI MANQUANTE (vide)
-
-				var selectedSories = [];
-				$.each(_this.postItMemory.relativStories, function(){
-					if(this.isInSprint){
-						selectedSories.push(this);
-					}
-				});
-				var addBlanckDiv = '';
-
-				drawStoryPostIt(selectedSories,$("#postItContainer"),true);
-				pageConter.pStory = Math.ceil(selectedSories.length / 12);
-
-				/*****************************************************************************/
-				//AFFICHAGE DE TACHES NORMALE PLUS COMPLéTION SI %12 != 0
-				var selectedTasks = [];
-				$.each(_this.postItMemory.relativStories, function(){
-					if(this.isInSprint){
-						$.each(this.tasks,function(){
-							if(this.isInSprint && !this.isPairProg){
-								selectedTasks.push(this);
-							}
-						});
-					}
-				});
-
-				drawTaskPostIt(selectedTasks,$("#postItContainer > div"),true);
-				pageConter.pTask = Math.ceil(selectedTasks.length / 12);
-
-				/*****************************************************************************/
-				//AFFICHAGE DE TACHES PAIRPROG PLUS COMPLéTION SI %12 != 0
-				selectedTasks = [];
-				$.each(_this.postItMemory.relativStories, function(){
-					if(this.isInSprint){
-						$.each(this.tasks,function(){
-							if(this.isInSprint && this.isPairProg){
-								selectedTasks.push(this);
-							}
-						});
-					}
-				});
-
-				drawTaskPostIt(selectedTasks,$("#postItContainer > div"),true)
-				pageConter.pTaskPP = Math.ceil(selectedTasks.length / 12);
-
+				var allStories = [];
+				if(_this.postItMemory.backUpStories.length){
+					allStories = _this.postItMemory.backUpStories;
+				}else{
+					allStories = _this.postItMemory.relativStories;
+				}
+				var infos = runDrawing(allStories, true);
+				pageConter.pStory = Math.ceil(infos.nbStories / 12);
+				pageConter.pTask = Math.ceil(infos.nbTasks / 12);
+				pageConter.pTaskPP = Math.ceil(infos.nbTasksPP / 12);
 				alert('Veuillez insérer : ' + pageConter.pStory + ' feuille orange, ' + pageConter.pTask + ' feuille jaune, ' + pageConter.pTaskPP + ' feuille verte.');
 				$("#postItContainer").find('div').print({stylesheet:'app/styles/externalCssPrintable.css'});
+			},
+
+			memoriseStory: function(){
+				var _this = this;
+				var selectedSories = [];
+				var isPresent = false;
+				$.each(_this.postItMemory.relativStories, function(){
+					var story = this;
+					if(this.isInSprint){
+						$.each(_this.postItMemory.backUpStories,function(){
+							if(this.id == story.id){
+								isPresent = true;
+							}
+						});
+						if(!isPresent){
+							_this.postItMemory.backUpStories.push(this);
+
+						}
+					}
+				});
+				localStorage.setItem('backupedStories',JSON.stringify(_this.postItMemory.backUpStories));
+				window.test = _this.postItMemory.backUpStories;
+				alert("Données sauvegardée");
+			},
+
+			visualizeMemo: function(){
+				$("#postItContainer").children().remove();
+				var _this = this;
+				var allStories = [];
+				if(_this.postItMemory.backUpStories.length){
+					allStories = _this.postItMemory.backUpStories;
+				}else{
+					allStories = _this.postItMemory.relativStories;
+				}
+				var infos = runDrawing(allStories, false);
 			}
 
 		});

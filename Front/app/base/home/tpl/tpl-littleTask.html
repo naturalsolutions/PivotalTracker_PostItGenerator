@@ -1,15 +1,11 @@
-<td id="validateTask">
-	<div id="divTaskContainer_<%= id %>" class="container-fluid">
-		<div class="col-xs-1">
+<li>
+	<div id="divTaskContainer_<%= id %>" class="">
 			<input type="checkbox" id="checkTask_<%= id %>" value="" checked></input>
-		</div>
-		<div <div class="col-xs-11">
 			tache ID : <%= id %>; Description : <%= description %>
 			<%
 			if(isPairProg){
 				%> <b>Pair Programming</b><%
 			}
 			%>
-		</div>
 	</div>
-</td>
+</li>

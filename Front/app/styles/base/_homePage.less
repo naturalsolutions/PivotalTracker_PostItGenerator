@@ -15,13 +15,33 @@ h2{
 
 .home-page{
 	.block1{
-		background: red;
+		background: @left-panel;
+		#divStories{
+			ul{
+				li{
+					list-style: none;
+					padding: 10px;
+					.inputPrio{
+						width: 25px;
+						border-radius: 2px;
+						border-style: none;
+						padding: 3px;
+					}
+					ul{
+						li{
+							list-style: none;
+							padding: 5px;
+						}
+					}
+				}
+			}
+		}
 	}
 	.block2{
-		background: green;
+		background:@right-panel;
 	}
 	.rightHeader{
-		background: purple;
+		background: @right-panel-header;
 		width: 100%;
 		max-height: 50px;
 		overflow: hidden;
@@ -32,14 +52,14 @@ h2{
 	}
 }
 
-body{
-	opacity: 0.8;
-}
+
 
 div.vontainer{
 	float: left;
 	width: 186pt;
-
+	margin-left: 10px;
+	box-shadow: 5px 5px 3px 0px rgba(0,0,0,0.5);
+	margin-top: 10px;
 }
 
 .onePostItContainer{
@@ -47,6 +67,7 @@ div.vontainer{
 	height:210.5pt;
 	outline: 1px solid black;
 	padding: 5px;
+	background: @postitStory-background;
 	.topContainer{
 		height: 16.6%;
 	}
@@ -56,8 +77,37 @@ div.vontainer{
 	.StoryTitleContainer{
 		height: 50%;
 	}
+	.TaskTitleContainer{
+		height: 49%;
+	}
 	.MembershipContainer{
 		height: 16.6%;
+	}
+
+
+}
+.onePostItContainer.postItTaskPP{
+	background-color: @postitTaskPP-background;
+}
+.onePostItContainer.postItTask{
+	background-color: @postitTask-background;
+}
+
+.notToDisplay{
+	display: none;
+}
+
+.tdStory{
+	background: @tabChoiceStory;
+}
+
+
+
+
+table > tbody > tr{
+	/* background: @tabChoiceStory; */
+	td > div > table > tbody > tr{
+		background: @tabChoiceTask;
 	}
 }
 

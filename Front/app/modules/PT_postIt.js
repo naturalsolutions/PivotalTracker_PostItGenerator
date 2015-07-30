@@ -62,10 +62,52 @@ function drawTaskPostIt(allTasks,destElement,bCompletion){
 }
 
 function createEmptyDivCompletion(iTasksLength){
-	var blankDiv = ''
+	var blankDiv = '';
+	console.log('iTasksLength', iTasksLength, 12 - iTasksLength % 12)
 	for(var i = 0; i<12 - (iTasksLength % 12); i++){
-		blankDiv += '<div class="vontainer"><div class="onePostItContainer"></div></div>';
+		blankDiv += '<div class="vontainer notToDisplay"><div class="onePostItContainer"></div></div>';
 	}
 	return blankDiv;
+}
+
+function runDrawing(storys, addCompletion){
+	var infoConter = {
+		nbStories : 0,
+		nbTasks : 0,
+		nbTasksPP : 0,
+	}
+	var selectedSories = [];
+	$.each(storys, function(){
+		if(this.isInSprint){
+			selectedSories.push(this);
+		}
+	});
+	infoConter.nbStories = selectedSories.length;
+	drawStoryPostIt(selectedSories,$("#postItContainer"),addCompletion);
+	var selectedTasks = [];
+	$.each(selectedSories, function(){
+		if(this.isInSprint){
+			$.each(this.tasks,function(){
+				if(this.isInSprint && !this.isPairProg){
+					selectedTasks.push(this);
+				}
+			});
+		}
+	});
+	infoConter.nbTasks = selectedTasks.length;
+	drawTaskPostIt(selectedTasks,$("#postItContainer > div"),addCompletion);
+	selectedTasks = [];
+	$.each(selectedSories, function(){
+		if(this.isInSprint){
+			$.each(this.tasks,function(){
+				if(this.isInSprint && this.isPairProg){
+					selectedTasks.push(this);
+				}
+			});
+		}
+	});
+	infoConter.nbTasksPP = selectedTasks.length;
+	drawTaskPostIt(selectedTasks,$("#postItContainer > div"),addCompletion);
+	return infoConter;
 }
 

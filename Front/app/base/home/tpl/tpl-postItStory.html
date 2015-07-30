@@ -2,25 +2,27 @@
 <div class="onePostItContainer">
 	<div class="row topContainer">
 		<div class="col-xs-6 text-left">
-			<%= priority %>
+			<p><%= priority %></p>
 		</div>
 		<div class="col-xs-6 text-right">
-			<%= id %>
+			<p><%= String(id).substring(String(id).length-3,String(id).length) %></p>
 		</div>
 	</div>
 	<div class="row projectContainer">
 		<div class="col-xs-12 text-center">
-			<%= project_name %>
+			<p>
+				<%= project_name %>
+			</p>
 		</div>
 	</div>
 	<div class="row StoryTitleContainer">
 		<div class="col-xs-12 text-center">
-			<%= name %>
+			<p><%= name %></p>
 		</div>
 	</div>
 	<div class="row MembershipContainer">
 		<div class="col-xs-12 text-right">
-			<%= owner_initials %>
+			<p><%= owner_initials %></p>
 		</div>
 	</div>
 </div>

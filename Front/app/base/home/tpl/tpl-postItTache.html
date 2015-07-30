@@ -1,29 +1,29 @@
 
-<div class="onePostItContainer">
+<div class="onePostItContainer <%= (isPairProg == true ? "postItTaskPP" : "postItTask") %>">
 	<div class="row topContainer">
 		<div class="col-xs-6 text-left">
 
 		</div>
 		<div class="col-xs-6 text-right">
-			<%= story_id %>
+			<p><%= story_id %></p>
 		</div>
 	</div>
 	<div class="row projectContainer">
 		<div class="col-xs-12 text-center">
-			<%= project_name %>
+			<p><%= project_name %></p>
 		</div>
 	</div>
-	<div class="row StoryTitleContainer">
+	<div class="row TaskTitleContainer">
 		<div class="col-xs-12 text-center">
-			<%= description %>
+			<p><%= (description.length > 200 ? description.substring(0,200) : description) %></p>
 		</div>
 	</div>
 	<div class="row MembershipContainer">
 		<div class="col-xs-6 text-left">
-			<%= (owner_initial.length == 0 ? "und" : owner_initial) %>
+			<p><%= (owner_initial.length == 0 ? "und" : owner_initial) %></p>
 		</div>
 		<div class="col-xs-6 text-right">
-			<%= duree %>
+			<p><%= duree %></p>
 		</div>
 	</div>
 </div>
