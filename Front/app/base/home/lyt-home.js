@@ -18,7 +18,8 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				'click #btPP':'createTachePPPostIt',
 				'click #btPrint':'printPostIt1',
 				'click #btMemo':'memoriseStory',
-				'click #btVisu':'visualizeMemo'
+				'click #btVisu':'visualizeMemo',
+				'click #btEmpty':'emptyMemory'
 			},
 
 
@@ -36,7 +37,8 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				btPrint: '#btPrint',
 				btMemo: '#btMemo',
 				btVisu: '#btVisu',
-				icoHasData : "#icoHasData"
+				icoHasData : "#icoHasData",
+				btEmpty : "#btEmpty"
 			},
 			//Mémoire des infos relative au sprint en cour.
 			postItMemory:{
@@ -85,7 +87,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					_this.ui.sltProjects.append('<option value="'+this.id+'">'+this.name+'</option>');
 				});
 				//Rapidité a supprimer
-				_this.ui.divMembership.removeClass('hidden');
+				/*_this.ui.divMembership.removeClass('hidden');
 				_this.postItMemory.projectId = 536841;
 				_this.postItMemory.projectName = "TRACK";
 				var memberships = getMembership(536841);
@@ -109,12 +111,13 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					//TODO :: getStoriesFromIcebox
 				}
 				_this.postItMemory.relativStories = allStories;
-				_this.drawStoriesChoice(allStories);
+				_this.drawStoriesChoice(allStories);*/
 				//Fin de trucs a supprimer
 				if(localStorage.getItem('backupedStories') != null){
 					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
 					_this.ui.btPrint.removeAttr('disabled');
 					_this.ui.btVisu.removeAttr('disabled');
+					_this.ui.btEmpty.removeAttr('disabled');
 					console.log(_this.ui.icoHasData);
 				}
 			},
@@ -412,6 +415,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				});
 				localStorage.setItem('backupedStories',JSON.stringify(_this.postItMemory.backUpStories));
 				window.test = _this.postItMemory.backUpStories;
+				_this.ui.btEmpty.removeAttr('disabled');
 				alert("Données sauvegardée");
 			},
 
@@ -425,6 +429,15 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					allStories = _this.postItMemory.relativStories;
 				}
 				var infos = runDrawing(allStories, false);
+			},
+
+			emptyMemory: function(){
+				var r = confirm("Voulez vous vider le localStorage");
+				if (r == true) {
+					alert();
+					localStorage.clear();
+					_this.postItMemory.backUpStories = [];
+				}
 			}
 
 		});
