@@ -5,6 +5,14 @@ ainsi que l'éxécution en étapes.
 Documantation api PT dispo sur : https://www.pivotaltracker.com/help/api/rest/v5
 */
 
+var imgDureeClassObj = {
+	0:'durre0',
+	1:'durre1_4',
+	5:'durre5_8',
+	9:'durre9_12',
+	13:'durre13_14',
+	15:'durre14plus'
+}
 
 ///Récupère l'ensemble des membres d'un projet.
 ///Param : projectId -> id du projet dans PT
@@ -155,13 +163,13 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			alert("Cannot get data");
 		}
 	});
-	//On assigne les différentes informations aux taches (durée et éxecutant)
+	//On assigne les différentes informations aux taches (durée, éxecutant, imgCllass)
 	$.each(myTempTasks,function(){
 		if(!this.complete){
 			this.isInSprint = true;
 			var regexPP = /\d(\+\d)+$/;
-			if(this.description.match(regexPP)){
-				var tabDureeBrut = regexPP.exec(this.description);
+			if(this.description.trim().match(regexPP)){
+				var tabDureeBrut = regexPP.exec(this.description.trim());
 				var tabDuree = tabDureeBrut[0].split('+');
 				var duree = 0;
 				$.each(tabDuree,function(index,value){
@@ -169,7 +177,8 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 				});
 				this.duree = duree;
 				regexPP = /[A-Z]{2}(\+[A-Z]{2})+/;
-				var ownerBrut = regexPP.exec(this.description);
+				var ownerBrut = regexPP.exec(this.description.trim());
+				this.description = this.description.trim().replace(regexPP, "");
 				var owners = []
 				if(ownerBrut != null){
 					var owners = ownerBrut[0].split("+");
@@ -178,12 +187,14 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 				this.isPairProg = true;
 			}else{
 				regexPP = /[A-Z]{2}(\+[A-Z]{2})+$/;
-				if(this.description.match(regexPP)){
-					var ownerBrut = regexPP.exec(this.description);
+				if(this.description.trim().match(regexPP)){
+					var ownerBrut = regexPP.exec(this.description.trim());
 					var owners = ownerBrut[0].split("+");
 					this.owner_initial = owners;
-					regexPP = /\d(\+\d)+/;
-					var tabDureeBrut = regexPP.exec(this.description);
+					this.description = this.description.trim().replace(regexPP, "");
+					regexPP = /\d(\+\d)+$/;
+					var tabDureeBrut = regexPP.exec(this.description.trim());
+					this.description = this.description.trim().replace(regexPP, "");
 					var tabDuree = tabDureeBrut[0].split('+');
 					var duree = 0;
 					$.each(tabDuree,function(index,value){
@@ -193,12 +204,42 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 					this.isPairProg = true;
 				}else{
 					regexPP = /(\d)+$/;
-					var tabDureeBrut = regexPP.exec(this.description);
-					this.duree = regexPP.exec(this.description)[0];
-					this.owner_initial = memberInitial;
-					this.isPairProg = false;
+					if(this.description.trim().match(regexPP)){
+						var tabDureeBrut = regexPP.exec(this.description.trim());
+						this.duree = regexPP.exec(this.description.trim())[0];
+						this.description = this.description.trim().replace(regexPP, "");
+						this.owner_initial = memberInitial;
+						this.isPairProg = false;
+					}else{
+						regexPP = /([A-Z]{2})+$/;
+						this.description = this.description.trim().replace(regexPP, "");
+						regexPP = /(\d)+$/;
+						var tabDureeBrut = regexPP.exec(this.description.trim());
+						this.duree = regexPP.exec(this.description.trim())[0];
+						this.owner_initial = memberInitial;
+						this.description = this.description.trim().replace(regexPP, "");
+						this.isPairProg = false;
+					}
 				}
 			}
+			regexPP = /\s*\-$/;
+			this.description = this.description.trim().replace(regexPP, "");
+			var newClass = '';
+			console.log('this.duree',this.duree);
+			if(this.duree == 0){
+				newClass = imgDureeClassObj[0];
+			}else if(this.duree < 5){
+				newClass = imgDureeClassObj[1];
+			}else if (this.duree < 9){
+				newClass = imgDureeClassObj[5];
+			}else if (this.duree < 13){
+				newClass = imgDureeClassObj[9];
+			}else if (this.duree < 15){
+				newClass = imgDureeClassObj[13];
+			}else{
+				newClass = imgDureeClassObj[15];
+			}
+			this.addedClass = newClass;
 			this.project_name = projectName;
 			mytasks.push(this);
 		}

@@ -46,7 +46,7 @@ function drawTaskPostIt(allTasks,destElement,bCompletion){
 			this.$el.addClass('vontainer');
 		}
 	});
-
+	console.log('allTasks',allTasks);
 	var TaskCollectionView = Backbone.Marionette.CollectionView.extend({
 		childView: TaskChildView,
 		childViewContainer: "#allPostIt",
@@ -55,6 +55,7 @@ function drawTaskPostIt(allTasks,destElement,bCompletion){
 	var taskColl = new TaskColl(allTasks);
 	var taskCollView = new TaskCollectionView({ collection: taskColl  });
 	taskCollView.render();
+	console.log('taskCollView',taskCollView);
 	if(bCompletion){
 		$(taskCollView.el).append(createEmptyDivCompletion(allTasks.length));
 	}

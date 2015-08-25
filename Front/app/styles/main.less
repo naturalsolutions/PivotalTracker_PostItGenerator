@@ -16,6 +16,9 @@
 
 
 @media print{
+	*{
+		-webkit-print-color-adjust:exact;
+	}
 	html, body, main, .full-height, .ns-full-height{
 		overflow: auto;
 		height: inherit;
@@ -44,13 +47,13 @@
 	.onePostItContainer{
 		/* width: 186pt;
 		height:197pt; */
-		background: none;
+		-webkit-print-color-adjust:exact;
 		margin-top: 0px;
 		width:185pt;
 		height:25%;
 		p{
 			font-weight: bold;
-			font-size: 13pt;
+			font-size: 14pt;
 		}
 		.TaskTitleContainer{
 			p{
