@@ -113,6 +113,10 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				_this.postItMemory.relativStories = allStories;
 				_this.drawStoriesChoice(allStories);*/
 				//Fin de trucs a supprimer
+				if(localStorage.getItem('lastTimeConnection') == null){
+					localStorage.getItem('lastTimeConnection') = da
+				}
+				localStorage.getItem('lastTimeConnection');
 				if(localStorage.getItem('backupedStories') != null){
 					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
 					_this.ui.btPrint.removeAttr('disabled');
