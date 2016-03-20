@@ -3,3 +3,10 @@
 	width: 100%;
 	height:100%;
 }
+
+.removeStory{
+    display: none;
+}
+.removeTask{
+    display: none;
+}

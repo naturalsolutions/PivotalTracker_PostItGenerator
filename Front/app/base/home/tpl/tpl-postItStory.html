@@ -1,11 +1,14 @@
 
 <div class="onePostItContainer">
 	<div class="row topContainer">
-		<div class="col-xs-6 text-left">
-			<p><%= priority %></p>
+		<div class="col-xs-2 text-left">
+			<i name="<%= String(id) %>" class="removeStory glyphicon glyphicon-remove"></i>
+		</div>
+		<div class="col-xs-4">
+
 		</div>
 		<div class="col-xs-6 text-right">
-			<p><%= String(id).substring(String(id).length-3,String(id).length) %></p>
+			<span><%= String(id).substring(String(id).length-3,String(id).length) %></span>
 		</div>
 	</div>
 	<div class="row projectContainer">
@@ -21,7 +24,10 @@
 		</div>
 	</div>
 	<div class="row MembershipContainer">
-		<div class="col-xs-12 text-right">
+		<div class="col-xs-6 text-left">
+			<span class="prioritySpan"><%= priority %></span>
+		</div>
+		<div class="col-xs-6 text-right">
 			<p><%= owner_initials %></p>
 		</div>
 	</div>

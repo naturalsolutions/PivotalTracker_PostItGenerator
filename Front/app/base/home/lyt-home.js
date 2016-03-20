@@ -1,4 +1,4 @@
-define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../../modules/PT_initHome','../../modules/PT_postIt','print'],
+define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modules/PT_initHome','../../modules/PT_postIt','print'],
 	function($,_,Marionette, Backbone) {
 		'use strict';
 
@@ -19,7 +19,9 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				'click #btPrint':'printPostIt1',
 				'click #btMemo':'memoriseStory',
 				'click #btVisu':'visualizeMemo',
-				'click #btEmpty':'emptyMemory'
+				'click #btEmpty':'emptyMemory',
+				'click .removeTask':'removeTask',
+				'click .removeStory':'removeStory'
 			},
 
 
@@ -113,10 +115,6 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				_this.postItMemory.relativStories = allStories;
 				_this.drawStoriesChoice(allStories);*/
 				//Fin de trucs a supprimer
-				if(localStorage.getItem('lastTimeConnection') == null){
-					localStorage.setItem('lastTimeConnection',da);
-				}
-				localStorage.getItem('lastTimeConnection');
 				if(localStorage.getItem('backupedStories') != null){
 					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
 					_this.ui.btPrint.removeAttr('disabled');
@@ -139,6 +137,7 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				_this.ui.sltMemberships.append('<option value=""></option>')
 				var memberships = getMembership($(_this.ui.sltProjects).val());
 				_this.postItMemory.projectMember = memberships;
+				_this.ui.sltMemberships.append('<option value="0">Toutes les tâches</option>');
 				$.each(memberships, function(){
 					_this.ui.sltMemberships.append('<option value="'+this.id+'">'+this.nom+'-'+this.initials+'</option>');
 				});
@@ -163,13 +162,17 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 				if($("#divStories").children().length != 0){
 					$("#divStories").children().remove();
 				}
-				if(scope == "" || scope === undefined){
-					scope = 'current';
-					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
-				}else if(_this.ui.iterationScope != 'icebox'){
-					allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
+				if(_this.ui.sltMemberships.val() != 0){
+					if(scope == "" || scope === undefined){
+						scope = 'current';
+						allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
+					}else if(_this.ui.iterationScope != 'icebox'){
+						allStories = getStoriesByIteration(_this.ui.sltProjects.val(),_this.ui.sltMemberships.val(),scope,_this.postItMemory.projectMember,_this.postItMemory.projectName);
+					}else{
+						//TODO :: getStoriesFromIcebox
+					}
 				}else{
-					//TODO :: getStoriesFromIcebox
+					allStories = getCurrentStoriesByProject(_this.ui.sltProjects.val(),'current',_this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}
 				_this.postItMemory.relativStories = allStories;
 				_this.drawStoriesChoice(allStories);
@@ -254,7 +257,6 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 			getTasks: function(e){
 				var _this = this;
 				var container = $(e.currentTarget).parent();
-				console.log(container);
 				var storyId = container.attr("id").split("divStoryContainer_")[1];
 				if(container.children().find('div[id^=divTaskContainer_]').length){
 					container.find('div').remove();
@@ -442,6 +444,68 @@ define(['jquery','underscore','marionette', 'backbone', 'i18n','bootstrap','../.
 					localStorage.clear();
 					_this.postItMemory.backUpStories = [];
 				}
+			},
+
+			removeTask: function(element){
+				var r = confirm("Voulez vous supprimer la tâche de cette plannification?");
+				var theElem = $(element.currentTarget);
+				if(r == true){
+					var allStories;
+					if(this.postItMemory.backUpStories.length){
+						allStories = this.postItMemory.backUpStories;
+					}else{
+						allStories = this.postItMemory.relativStories;
+					}
+					$.each(allStories, function(index,value){
+						var ids = theElem.attr("name").split('&');
+						if(value.id == ids[0]){
+							$.each(value.tasks, function(i,v){
+								if(v.id == ids[1]){
+									v.isInSprint = false;
+									theElem.closest('.vontainer').remove();
+									return;
+								}
+							});
+							return;
+						}
+					})
+				}
+			},
+//TODO : Finir!
+			removeStory: function(elem){
+				var r = confirm("Voulez vous supprimer la story et toute ses tâchesde cette plannification?");
+				var theElem = $(elem.currentTarget);
+				if(r == true){
+					var id = theElem.attr('name');
+					var allStories;
+					this.deleteNEraseAllTaskById(id);
+				}
+			},
+
+			getTheSories: function(){
+				var allStories;
+				if(this.postItMemory.backUpStories.length){
+					allStories = this.postItMemory.backUpStories;
+				}else{
+					allStories = this.postItMemory.relativStories;
+				}
+				return allStories;
+			},
+
+			deleteNEraseAllTaskById : function(storyId){
+				var stories = this.getTheSories();
+				$.each(stories, function(i,v){
+					if(this.id == storyId){
+						this.isInSprint = false;
+						$.each(this.tasks,function(it,vt){
+							this.isInSprint = false;
+							if($('i[name^=' + storyId + ']').length){
+								$('i[name^=' + storyId + ']').closest('.vontainer').remove();
+							}
+						});
+						return;
+					}
+				});
 			}
 
 		});

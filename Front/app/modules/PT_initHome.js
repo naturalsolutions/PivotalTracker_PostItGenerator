@@ -14,6 +14,11 @@ var imgDureeClassObj = {
 	15:'durre14plus'
 }
 
+var themes = {
+	0:'meme',
+	1:'animaux'
+}
+
 ///Récupère l'ensemble des membres d'un projet.
 ///Param : projectId -> id du projet dans PT
 ///Return : [objects] repésentant les personnes impliquées dans le projet
@@ -140,6 +145,48 @@ function getStoriesByIteration(projectId,member,iterationScope, members, project
 }
 
 ///Récupère l'ensemble des des stories d'un projet,
+///Param : projectId -> id du projet dans PT
+///			iterationScope -> current,icebox,backlog
+///Return : [objects] repésentant les stories pour une personne sur un projet
+function getCurrentStoriesByProject(projectId,iterationScope, members, projectName){
+	var myStoriesTemp;
+	var myStories = [];
+	console.log(arguments);
+	$.ajax({
+		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/iterations",
+		beforeSend: function (xhr) {
+			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+		},
+		async: false,
+		type: 'GET',
+		dataType: 'json',
+		contentType: 'application/json',
+		processData: false,
+		data : 'scope=' + iterationScope,//+member
+		success: function (data) {
+			myStoriesTemp = data;
+		},
+		error: function(){
+			alert("Cannot get data");
+		}
+	});
+	var cptPrio = 1;
+	console.log("before bouce",myStoriesTemp);
+	$.each(myStoriesTemp[0].stories, function(){
+		console.log("in bouce");
+		if(this.current_state != 'accepted' && this.current_state != 'finished' && this.current_state != 'delivered'){
+				this.isInSprint = false;
+				this.owner_initials = convertIdsToMember(this.owner_ids,members);
+				this.priority = cptPrio;
+				cptPrio ++;
+				this.project_name = projectName;
+				myStories.push(this);
+		}
+	});
+	return myStories;
+}
+
+///Récupère l'ensemble des des stories d'un projet,
 ///Puis les tris pour ne garder que celles relatives a un user
 ///Param : projectId -> id du projet dans PT
 ///			storyId -> id de la story dans pt
@@ -168,26 +215,34 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 		if(!this.complete){
 			this.isInSprint = true;
 			var regexPP = /\d(\+\d)+$/;
+			//Taches PairPro sans noms
 			if(this.description.trim().match(regexPP)){
-				var tabDureeBrut = regexPP.exec(this.description.trim());
-				var tabDuree = tabDureeBrut[0].split('+');
-				var duree = 0;
-				$.each(tabDuree,function(index,value){
-					duree += parseInt(value);
-				});
-				this.duree = duree;
-				regexPP = /[A-Z]{2}(\+[A-Z]{2})+/;
-				var ownerBrut = regexPP.exec(this.description.trim());
-				this.description = this.description.trim().replace(regexPP, "");
-				var owners = []
-				if(ownerBrut != null){
-					var owners = ownerBrut[0].split("+");
-				}
-				this.owner_initial = owners;
-				this.isPairProg = true;
+				// console.log("Etat 1 descr : ", this.description);
+				// var tabDureeBrut = regexPP.exec(this.description.trim());
+				// var tabDuree = tabDureeBrut[0].split('+');
+				// var duree = 0;
+				// $.each(tabDuree,function(index,value){
+				// 	duree += parseInt(value);
+				// });
+				// this.duree = duree;
+				// regexPP = /[A-Z]{2}(\+[A-Z]{2})+/;
+				// var ownerBrut = regexPP.exec(this.description.trim());
+				// this.description = this.description.trim().replace(regexPP, "");
+				// var owners = []
+				// if(ownerBrut != null){
+				// 	var owners = ownerBrut[0].split("+");
+				// }
+				// this.owner_initial = owners;
+				// this.isPairProg = true;
+
+
+				//Suite a une demande les taches paiProg sans ressources ne sont pas affichées
+				this.isInSprint = false;
 			}else{
 				regexPP = /[A-Z]{2}(\+[A-Z]{2})+$/;
+				//Tache Pair programmin
 				if(this.description.trim().match(regexPP)){
+					console.log("Etat 2.1 descr : ", this.description);
 					var ownerBrut = regexPP.exec(this.description.trim());
 					var owners = ownerBrut[0].split("+");
 					this.owner_initial = owners;
@@ -203,14 +258,19 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 					this.duree = duree;
 					this.isPairProg = true;
 				}else{
+					console.log("Etat 2.2 descr : ", this.description);
 					regexPP = /(\d)+$/;
+					//Tahe (simple) avec horaires sans Initial
 					if(this.description.trim().match(regexPP)){
+						console.log("Etat 2.2.1  descr : ", this.description);
 						var tabDureeBrut = regexPP.exec(this.description.trim());
 						this.duree = regexPP.exec(this.description.trim())[0];
 						this.description = this.description.trim().replace(regexPP, "");
 						this.owner_initial = memberInitial;
 						this.isPairProg = false;
+					//TacheSimple avec temps et intital
 					}else{
+						console.log("Etat 2.2.2 descr : ", this.description);
 						regexPP = /([A-Z]{2})+$/;
 						this.description = this.description.trim().replace(regexPP, "");
 						regexPP = /(\d)+$/;
@@ -226,6 +286,7 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			this.description = this.description.trim().replace(regexPP, "");
 			var newClass = '';
 			console.log('this.duree',this.duree);
+			//TODO: Themes switcer
 			if(this.duree == 0){
 				newClass = imgDureeClassObj[0];
 			}else if(this.duree < 5){
@@ -239,9 +300,20 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			}else{
 				newClass = imgDureeClassObj[15];
 			}
+			regexPP = /\Wforfait\W/;
+			if(this.description.trim().toLowerCase().match(regexPP) != null){
+				this.isForfait = true;
+			}else{
+				this.isForfait = false;
+			}
 			this.addedClass = newClass;
+			//TODO: Theme switcher
+			this.addedTheme = 'theme_' + '0';
+
 			this.project_name = projectName;
-			mytasks.push(this);
+			if(this.isInSprint){
+				mytasks.push(this);
+			}
 		}
 	});
 	return mytasks;

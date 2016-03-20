@@ -40,8 +40,7 @@ require.config({
 		'requirejs-text'		: '../bower_components/requirejs-text/text',
 
 
-		'i18n'					: '../bower_components/i18n/i18next',
-
+		'i18n'					: './vendors/i18n/i18next',
 		'print'					: 'modules/jQuery.print',
 
 	},

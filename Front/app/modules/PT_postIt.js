@@ -112,3 +112,27 @@ function runDrawing(storys, addCompletion){
 	return infoConter;
 }
 
+function getTheSories(scope){
+	if(scope.postItMemory.backUpStories.length){
+		allStories = scope.postItMemory.backUpStories;
+	}else{
+		allStories = scope.postItMemory.relativStories;
+	}
+	return allStories;
+}
+
+
+function deleteNEraseAllTaskById(storyId){
+	var stories = getTheSories();
+	$.each(stories, function(i,v){
+		if(this.id == storyId){
+			$.each(this.tasks,function(it,vt){
+				this.isInSprint = false;
+				if($('i[name=' + storyId + '&' + taskId + ']').length){
+					$('i[name=' + storyId + '&' + taskId + ']').closest('.vontainer').remove();
+				}
+			});
+			return;
+		}
+	});
+}

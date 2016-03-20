@@ -127,7 +127,7 @@ define([
 					this.toStep(this.currentStep);
 				}
 			}
-			//for ajaxcall 
+			//for ajaxcall
 			this.disableNext();
 		},
 
@@ -139,14 +139,14 @@ define([
 					this.currentStep++;
 					this.toStep(this.currentStep);
 				}
-				
+
 		},
 
 		prevStep: function(){
 			this.currentStep === 0 ? this.currentStep : this.currentStep--;
 			this.toStep(this.currentStep);
 		},
-		
+
 
 		toStep: function(numstep){
 			var translater = Translater.getTranslater();
@@ -226,7 +226,7 @@ define([
 			return null;
 		},
 
-		
+
 		datachanged_text: function(e){
 			this.steps[this.currentStep].datachanged_text(e);
 		},
@@ -259,7 +259,7 @@ define([
 			} else {
 				idStep = parseInt($(e.target).parent().find('span.badge').text())-1 ;
 			}
-			
+
 			if (this.currentStep >= idStep)
 				this.toStep(idStep);
 		},
@@ -285,7 +285,7 @@ define([
 					if (isConfirm) {
 						 self.toStep(0);
 					} else {
-						
+
 					}
 			});
 		},

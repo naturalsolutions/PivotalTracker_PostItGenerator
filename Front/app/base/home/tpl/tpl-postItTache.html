@@ -1,11 +1,13 @@
-
-<div class="onePostItContainer <%= (isPairProg == true ? "postItTaskPP" : "postItTask") %> <%=addedClass%>">
+<div class="onePostItContainer <%= (isPairProg == true ? "postItTaskPP" : "postItTask") %> <%=addedTheme%> <%=addedClass%>" style="background-image:<%=%>">
 	<div class="row topContainer">
-		<div class="col-xs-6 text-left">
-
+		<div class="col-xs-4 text-left">
+			<i name="<%= story_id %>&<%= id %>" class="removeTask glyphicon glyphicon-remove"></i>
 		</div>
-		<div class="col-xs-6 text-right">
-			<p><%= story_id %></p>
+		<div class="col-xs-5">
+			<b><%= isForfait ? 'Forfait' : ''%></b>
+		</div>
+		<div class="col-xs-3 text-right">
+			<p><%= String(story_id).substring(String(story_id).length-3,String(story_id).length) %></p>
 		</div>
 	</div>
 	<div class="row projectContainer">
