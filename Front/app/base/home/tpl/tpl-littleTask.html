@@ -1,11 +1,35 @@
 <li>
-	<div id="divTaskContainer_<%= id %>" class="">
+	<div id="divTaskContainer_<%= id %>" class="row">
 			<input type="checkbox" id="checkTask_<%= id %>" value="" checked></input>
 			tache ID : <%= id %>; Description : <%= description %>
 			<%
 			if(isPairProg){
 				%> <b>Pair Programming</b><%
 			}
+            if(owner_initial == null){
+                %><div class="moreInfoContainer">
+                    <div class="col-md-4">
+                        <span>
+                            <b>Propriétaire(s) : <b>
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <input class="pull-left form-control inputLittleTask" id="own_<%=id%>&<%=story_id%>" type="text">
+                    </div>
+                </div><%
+            }
+            if(duree == null){
+                %><div class="moreInfoContainer">
+                    <div class="col-md-4">
+                        <span>
+                            <b>Durée (hh & hh+hh):</b>
+                        </span>
+                    </div>
+                    <div class="col-md-8">
+                        <input class="form-control inputLittleTask" id="dur_<%=id%>&<%=story_id%>" type="text">
+                    </div>
+                </div><%
+            }
 			%>
 	</div>
 </li>

@@ -40,7 +40,8 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				btMemo: '#btMemo',
 				btVisu: '#btVisu',
 				icoHasData : "#icoHasData",
-				btEmpty : "#btEmpty"
+				btEmpty : "#btEmpty",
+				inputMoreInfo: ".inputLittleTask"
 			},
 			//Mémoire des infos relative au sprint en cour.
 			postItMemory:{
@@ -287,24 +288,81 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 
 			//Cré les post it sur l'écran de droite
 			createStoryPostIt: function(e){
-				var _this = this;
-				if(_this.ui.postItContainer.children().length){
-					_this.ui.postItContainer.children().remove();
+				console.log('inputLittleTask',this.ui.inputMoreInfo);
+				var boolAllElement = true;
+				var tabModifToInsert = []
+				if($('.inputLittleTask').length){
+					$('.inputLittleTask').each(function(index,elem){
+						var objMaj = {
+							story_id:"0",
+							task_id:"0",
+							newOwn:"",
+							newDur:"",
+						}
+						console.log('$(elem).val()',elem);
+						if($(elem).val() == "" || $(elem).val() === undefined){
+							boolAllElement = false;
+							return;
+						}else{
+							var tabInfoNIds = $(elem).attr('id').split('_');
+							var infoName = tabInfoNIds[0];
+							var tabIds = tabInfoNIds[1].split('&');
+							objMaj.story_id = tabIds[1];
+							objMaj.task_id = tabIds[0];
+							if(infoName == "dur"){
+								objMaj.newDur = $(elem).val();
+							}
+							if(infoName == "own"){
+								objMaj.newOwn = $(elem).val();
+							}
+							tabModifToInsert.push(objMaj);
+						}
+					});
 				}
-				_this.ui.rightHeader.children().find('button').removeAttr('disabled');
-				_this.ui.btPrint.removeAttr('disabled');
-					_this.ui.btVisu.removeAttr('disabled');
-				_this.ui.btMemo.removeAttr('disabled');
-				_this.ui.btPrint.removeAttr('disabled');
-					_this.ui.btVisu.removeAttr('disabled');
-				/*var StoryModel = Backbone.Model.extend({});*/
-				var selectedSories = [];
-				$.each(_this.postItMemory.relativStories, function(){
-					if(this.isInSprint){
-						selectedSories.push(this);
+				console.log("tabModifToInsert",tabModifToInsert)
+				if(boolAllElement){
+					var _this = this;
+					if(_this.ui.postItContainer.children().length){
+						_this.ui.postItContainer.children().remove();
 					}
-				});
-				drawStoryPostIt(selectedSories,$("#postItContainer"));
+					_this.ui.rightHeader.children().find('button').removeAttr('disabled');
+					_this.ui.btPrint.removeAttr('disabled');
+						_this.ui.btVisu.removeAttr('disabled');
+					_this.ui.btMemo.removeAttr('disabled');
+					_this.ui.btPrint.removeAttr('disabled');
+						_this.ui.btVisu.removeAttr('disabled');
+					/*var StoryModel = Backbone.Model.extend({});*/
+					var selectedSories = [];
+					$.each(_this.postItMemory.relativStories, function(){
+						var story = this;
+						if(tabModifToInsert.length){
+							$.each(tabModifToInsert,function(index,obj){
+								if(story.id == obj.story_id){
+									$.each(story.tasks,function(index,value){
+										console.log('niveau 3 ', value, obj);
+										if(value.id == obj.task_id){
+											if(obj.newOwn != ""){
+												console.log('obj.newOwn assignated',obj.newOwn)
+												value.owner_initial = obj.newOwn;
+											}
+											if(obj.newDur != ""){
+												console.log('obj.newDur assignated',obj.newDur)
+												value.duree = obj.newDur;
+											}
+										}
+									})
+								}
+							});
+						}
+						if(this.isInSprint){
+							console.log('thislastory',this);
+							selectedSories.push(this);
+						}
+					});
+					drawStoryPostIt(selectedSories,$("#postItContainer"));
+				}else{
+					alert("Veuillez remplir les informations manquantes dans le panel de gauche");
+				}
 			},
 
 			//Cré les post it sur l'écran de droite
