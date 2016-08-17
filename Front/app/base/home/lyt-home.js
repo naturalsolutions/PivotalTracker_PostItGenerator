@@ -97,12 +97,15 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				//Fin de trucs a supprimer
 				if(localStorage.getItem('backupedStories') != null){
 					_this.postItMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
+					console.log('zgueg',_this.postItMemory.relativStories);
 					_this.ui.btPrint.removeAttr('disabled');
 					_this.ui.btVisu.removeAttr('disabled');
 					_this.ui.btEmpty.removeAttr('disabled');
 					_this.ui.btTache.removeAttr('disabled');
 					_this.ui.btStory.removeAttr('disabled');
 					_this.ui.btPP.removeAttr('disabled');
+				}else{
+					_this.postItMemory.relativStories = [];
 				}
 			},
 
@@ -446,7 +449,7 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				}else{
 					allStories = _this.postItMemory.relativStories;
 				}
-				var infos = runDrawing(allStories, true);		
+				var infos = runDrawing(allStories, true);
 			},
 
 			memoriseStory: function(){
