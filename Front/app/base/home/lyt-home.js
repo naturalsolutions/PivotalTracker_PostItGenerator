@@ -39,6 +39,9 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				btPrint: '#btPrint',
 				btMemo: '#btMemo',
 				btVisu: '#btVisu',
+				btTache: "#btTache",
+				btStory: "#btStory",
+				btPP: "#btPP",
 				icoHasData : "#icoHasData",
 				btEmpty : "#btEmpty",
 				inputMoreInfo: ".inputLittleTask"
@@ -58,30 +61,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				backUpStories: []
 			},
 
-
-/*			animateIn: function() {
-				this.$el.removeClass('zoomOutDown');
-				this.$el.addClass('zoomInDown');
-				this.$el.animate(
-					{ opacity: 1 },
-					500,
-					_.bind(this.trigger, this, 'animateIn')
-					);
-			},
-
-			animateOut: function() {
-				this.$el.removeClass('zoomInUp');
-				this.$el.animate(
-					{ opacity : 0 },
-					500,
-					_.bind(this.trigger, this, 'animateOut')
-					);
-			},
-			*/
-
-
-
-
 			onShow : function(options) {
 				var _this = this;
 				this.$el.i18n();
@@ -89,7 +68,7 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				$.each(projects, function(){
 					_this.ui.sltProjects.append('<option value="'+this.id+'">'+this.name+'</option>');
 				});
-				//Rapidité a supprimer
+				//******************Rapidité a supprimer (code simulant un comportement utilisateur)*****************//
 				/*_this.ui.divMembership.removeClass('hidden');
 				_this.postItMemory.projectId = 536841;
 				_this.postItMemory.projectName = "TRACK";
@@ -117,11 +96,13 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				_this.drawStoriesChoice(allStories);*/
 				//Fin de trucs a supprimer
 				if(localStorage.getItem('backupedStories') != null){
-					_this.postItMemory.backUpStories = JSON.parse(localStorage.getItem('backupedStories'));
+					_this.postItMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
 					_this.ui.btPrint.removeAttr('disabled');
 					_this.ui.btVisu.removeAttr('disabled');
 					_this.ui.btEmpty.removeAttr('disabled');
-					console.log(_this.ui.icoHasData);
+					_this.ui.btTache.removeAttr('disabled');
+					_this.ui.btStory.removeAttr('disabled');
+					_this.ui.btPP.removeAttr('disabled');
 				}
 			},
 
@@ -175,7 +156,7 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				}else{
 					allStories = getCurrentStoriesByProject(_this.ui.sltProjects.val(),'current',_this.postItMemory.projectMember,_this.postItMemory.projectName);
 				}
-				_this.postItMemory.relativStories = allStories;
+				_this.postItMemory.relativStories = _this.postItMemory.relativStories.concat(allStories);
 				_this.drawStoriesChoice(allStories);
 			},
 
@@ -241,6 +222,9 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				var TaskChildView = Backbone.Marionette.ItemView.extend({
 					tagName: "ul",
 					template: 'app/base/home/tpl/tpl-littleTask.html',
+					onRender: function(){
+						elt.append(taskCollView.el);
+					}
 				});
 
 				var TaskCollectionView = Backbone.Marionette.CollectionView.extend({
@@ -251,7 +235,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				var taskCollView = new TaskCollectionView({ collection: taskColl  });
 
 				taskCollView.render();
-				elt.append(taskCollView.el);
 			},
 
 			//Récupère toutes les taches d'une story ou les effeces si on nes souhaite pas avoir cette stry
@@ -288,7 +271,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 
 			//Cré les post it sur l'écran de droite
 			createStoryPostIt: function(e){
-				console.log('inputLittleTask',this.ui.inputMoreInfo);
 				var boolAllElement = true;
 				var tabModifToInsert = []
 				if($('.inputLittleTask').length){
@@ -299,7 +281,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 							newOwn:"",
 							newDur:"",
 						}
-						console.log('$(elem).val()',elem);
 						if($(elem).val() == "" || $(elem).val() === undefined){
 							boolAllElement = false;
 							return;
@@ -319,7 +300,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 						}
 					});
 				}
-				console.log("tabModifToInsert",tabModifToInsert)
 				if(boolAllElement){
 					var _this = this;
 					if(_this.ui.postItContainer.children().length){
@@ -333,21 +313,33 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 						_this.ui.btVisu.removeAttr('disabled');
 					/*var StoryModel = Backbone.Model.extend({});*/
 					var selectedSories = [];
+					console.log('Schtroudel Before ',_this.postItMemory.relativStories);
 					$.each(_this.postItMemory.relativStories, function(){
 						var story = this;
 						if(tabModifToInsert.length){
 							$.each(tabModifToInsert,function(index,obj){
 								if(story.id == obj.story_id){
 									$.each(story.tasks,function(index,value){
-										console.log('niveau 3 ', value, obj);
 										if(value.id == obj.task_id){
 											if(obj.newOwn != ""){
-												console.log('obj.newOwn assignated',obj.newOwn)
 												value.owner_initial = obj.newOwn;
 											}
 											if(obj.newDur != ""){
-												console.log('obj.newDur assignated',obj.newDur)
 												value.duree = obj.newDur;
+												if(obj.newDur == 0){
+													value.addedClass = imgDureeClassObj[0];
+												}else if(obj.newDur < 5){
+													value.addedClass = imgDureeClassObj[1];
+												}else if (obj.newDur < 9){
+													value.addedClass = imgDureeClassObj[5];
+												}else if (obj.newDur < 13){
+													value.addedClass = imgDureeClassObj[9];
+												}else if (obj.newDur < 15){
+													value.addedClass = imgDureeClassObj[13];
+												}else{
+													value.addedClass = imgDureeClassObj[15];
+												}
+												//TODO : SET Les bonnes images
 											}
 										}
 									})
@@ -355,10 +347,12 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 							});
 						}
 						if(this.isInSprint){
-							console.log('thislastory',this);
+
 							selectedSories.push(this);
+							//selectedSories = selectedSories.concat(_this.postItMemory.relativStories);
 						}
 					});
+					console.log('Schtroudel After',_this.postItMemory.relativStories);
 					drawStoryPostIt(selectedSories,$("#postItContainer"));
 				}else{
 					alert("Veuillez remplir les informations manquantes dans le panel de gauche");
@@ -447,38 +441,41 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				$("#postItContainer").children().remove();
 				var allStories = [];
 				if(_this.postItMemory.backUpStories.length){
+					alert("c'est pas bon");
 					allStories = _this.postItMemory.backUpStories;
 				}else{
 					allStories = _this.postItMemory.relativStories;
 				}
-				var infos = runDrawing(allStories, true);
-				pageConter.pStory = Math.ceil(infos.nbStories / 12);
-				pageConter.pTask = Math.ceil(infos.nbTasks / 12);
-				pageConter.pTaskPP = Math.ceil(infos.nbTasksPP / 12);
-				alert('Veuillez insérer : ' + pageConter.pStory + ' feuille orange, ' + pageConter.pTask + ' feuille jaune, ' + pageConter.pTaskPP + ' feuille verte.');
-				$("#postItContainer").find('div').print({stylesheet:'app/styles/externalCssPrintable.css'});
+				var infos = runDrawing(allStories, true);		
 			},
 
 			memoriseStory: function(){
 				var _this = this;
 				var selectedSories = [];
 				var isPresent = false;
+				if(JSON.parse(localStorage.getItem('backupedStories'))){
+					var backupedStories = JSON.parse(localStorage.getItem('backupedStories'));
+				}else{
+					var backupedStories = [];
+				}
+				console.log('_this.postItMemory.backupedStories',backupedStories);
+				console.log('_this.postItMemory.relativStories',_this.postItMemory.relativStories);
 				$.each(_this.postItMemory.relativStories, function(){
 					var story = this;
 					if(this.isInSprint){
-						$.each(_this.postItMemory.backUpStories,function(){
+						isPresent = false;
+						$.each(backupedStories,function(){
 							if(this.id == story.id){
 								isPresent = true;
 							}
 						});
 						if(!isPresent){
-							_this.postItMemory.backUpStories.push(this);
+							backupedStories.push(this);
 
 						}
 					}
 				});
-				localStorage.setItem('backupedStories',JSON.stringify(_this.postItMemory.backUpStories));
-				window.test = _this.postItMemory.backUpStories;
+				localStorage.setItem('backupedStories',JSON.stringify(backupedStories));
 				_this.ui.btEmpty.removeAttr('disabled');
 				alert("Données sauvegardée");
 			},
@@ -488,6 +485,7 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				var _this = this;
 				var allStories = [];
 				if(_this.postItMemory.backUpStories.length){
+					alert('mesCouilles');
 					allStories = _this.postItMemory.backUpStories;
 				}else{
 					allStories = _this.postItMemory.relativStories;

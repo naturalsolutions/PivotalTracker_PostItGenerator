@@ -1,3 +1,4 @@
+<%console.log("this",arguments)%>
 <div class="onePostItContainer <%= (isPairProg == true ? "postItTaskPP" : "postItTask") %> <%=addedTheme%> <%=addedClass%>" >
 	<div class="row topContainer">
 		<div class="col-xs-4 text-left">
@@ -17,7 +18,7 @@
 	</div>
 	<div class="row TaskTitleContainer">
 		<div class="col-xs-12 text-center">
-			<p><%= (description.length > 200 ? description.substring(0,200) : description) %></p>
+			<p><%= (description.length > 100 ? description.substring(0,100) : description) %></p>
 		</div>
 	</div>
 	<div class="row MembershipContainer">

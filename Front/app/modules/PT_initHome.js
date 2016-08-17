@@ -109,7 +109,6 @@ function getStoriesByProjectAndMember(projectId,member){
 function getStoriesByIteration(projectId,member,iterationScope, members, projectName){
 	var myStoriesTemp;
 	var myStories = [];
-	console.log(arguments);
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/iterations",
 		beforeSend: function (xhr) {
@@ -151,7 +150,6 @@ function getStoriesByIteration(projectId,member,iterationScope, members, project
 function getCurrentStoriesByProject(projectId,iterationScope, members, projectName){
 	var myStoriesTemp;
 	var myStories = [];
-	console.log(arguments);
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/iterations",
 		beforeSend: function (xhr) {
@@ -171,9 +169,7 @@ function getCurrentStoriesByProject(projectId,iterationScope, members, projectNa
 		}
 	});
 	var cptPrio = 1;
-	console.log("before bouce",myStoriesTemp);
 	$.each(myStoriesTemp[0].stories, function(){
-		console.log("in bouce");
 		if(this.current_state != 'accepted' && this.current_state != 'finished' && this.current_state != 'delivered'){
 				this.isInSprint = false;
 				this.owner_initials = convertIdsToMember(this.owner_ids,members);
@@ -218,6 +214,10 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			var regexPP2 = /[A-Z]{2}(\+[A-Z]{2})+$/;
 			//Taches PairPro sans noms
 			var tabDescrInfo = this.description.split('.-');
+			console.log('tabDescrInfo',tabDescrInfo);
+			if(tabDescrInfo.length <= 1 ){
+				tabDescrInfo = this.description.split('. -');
+			}
 			if(tabDescrInfo.length > 1){
 				if(this.description.trim().match(regexPP) || this.description.trim().match(regexPP2)){
 					regexPP2 = /[A-Z]{2}(\+[A-Z]{2})/;
@@ -226,9 +226,21 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 						var owners = ownerBrut[0].split("+");
 						this.owner_initial = owners;
 						this.description = this.description.trim().replace(regexPP2, "");
-						regexPP = /\d(\+\d)/;
+						regexPP = /\d+(\+\d+)/;
 						if(this.description.trim().match(regexPP)){
-							var duree = regexPP.exec(this.description.trim())[0];
+							var tabDureeBrut = regexPP.exec(this.description.trim());
+							console.log('tabDureeBrut',tabDureeBrut);
+							this.description = this.description.trim().replace(regexPP, "");
+							var tabDuree = tabDureeBrut[0].split('+');
+							console.log('tabDuree',tabDuree);
+							var dureeBrute = 0;
+							$.each(tabDuree,function(index,value){
+								console.log('value',value);
+								dureeBrute += parseInt(value);
+							});
+							console.log("enboucle")
+							var duree = tabDureeBrut[0];
+							this.dureeBrute = dureeBrute;
 							this.duree = duree;
 							this.description = this.description.trim().replace(regexPP, "");
 						}else{
@@ -239,7 +251,6 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 						//Suite a une demande les taches paiProg sans ressources ne sont pas affichées
 						this.isInSprint = false;
 					}
-					// console.log("Etat 1 descr : ", this.description);
 					// var tabDureeBrut = regexPP.exec(this.description.trim());
 					// var tabDuree = tabDureeBrut[0].split('+');
 					// var duree = 0;
@@ -261,36 +272,9 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 				}else{
 					regexPP = /[A-Z]{2}(\+[A-Z]{2})+$/;
 					//Tache Pair programmin
-					// if(this.description.trim().match(regexPP)){
-					// 	console.log("Etat 2.1 descr : ", this.description);
-					// 	var ownerBrut = regexPP.exec(this.description.trim());
-					// 	var owners = ownerBrut[0].split("+");
-					// 	this.owner_initial = owners;
-					// 	this.description = this.description.trim().replace(regexPP, "");
-					// 	regexPP = /\d(\+\d)+$/;
-					// 	if(this.description.trim().match(regexPP)){
-					// 		var duree = regexPP.exec(this.description.trim())[0];
-					// 		this.duree = duree;
-					// 		this.description = this.description.trim().replace(regexPP, "");
-					// 	}else{
-					// 		this.duree = null;
-					// 	}
-					// 	// var tabDureeBrut = regexPP.exec(this.description.trim());
-					// 	// this.description = this.description.trim().replace(regexPP, "");
-					// 	// var tabDuree = tabDureeBrut[0].split('+');
-					// 	// var duree = 0;
-					// 	// $.each(tabDuree,function(index,value){
-					// 	// 	duree += parseInt(value);
-					// 	// });
-					// 	// this.duree = duree;
-					// 	this.isPairProg = true;
-					// }else{
-						//if()
-						console.log("Etat 2.2 descr : ", this.description);
 						regexPP = /(\d)+$/;
 						//Tahe (simple) avec horaires sans Initial
 						if(this.description.trim().match(regexPP)){
-							console.log("Etat 2.2.1  descr : ", this.description);
 							var tabDureeBrut = regexPP.exec(this.description.trim());
 							this.duree = regexPP.exec(this.description.trim())[0];
 							this.description = this.description.trim().replace(regexPP, "");
@@ -305,10 +289,8 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 								this.owner_initial = null
 							}
 							this.isPairProg = false;
-							console.log("la tache timelending", this);
 						//TacheSimple avec temps et intital
 						}else if(this.description.trim().match(/([A-Z]{2})+$/)){
-							console.log("Etat 2.2.2 descr : ", this.description);
 							regexPP = /([A-Z]{2})+$/;
 							if(this.description.trim().match(regexPP)){
 								var taskMemeber  = regexPP.exec(this.description.trim())[0];
@@ -329,30 +311,32 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 							}
 							// this.description = this.description.trim().replace(regexPP, "");
 							this.isPairProg = false;
-							console.log("la tache initialending", this);
 						}else{
 							this.description = this.description.trim();
 							this.isPairProg = false;
 							this.owner_initial = (memberInitial ? memberInitial : null);
 							this.duree = null;
-							console.log("la tache pourris 2", this);
 						}
 					// }
 				}
 				regexPP = /\s*\-$/;
 				this.description = this.description.trim().replace(regexPP, "");
 				var newClass = '';
-				console.log('this.duree',this.duree);
 				//TODO: Themes switcer
-				if(this.duree == 0){
+				if(this.isPairProg){
+					var paramDuree = 'dureeBrute';
+				}else{
+					var paramDuree = 'duree'
+				}
+				if(this[paramDuree] == 0){
 					newClass = imgDureeClassObj[0];
-				}else if(this.duree < 5){
+				}else if(this[paramDuree] < 5){
 					newClass = imgDureeClassObj[1];
-				}else if (this.duree < 9){
+				}else if (this[paramDuree] < 9){
 					newClass = imgDureeClassObj[5];
-				}else if (this.duree < 13){
+				}else if (this[paramDuree] < 13){
 					newClass = imgDureeClassObj[9];
-				}else if (this.duree < 15){
+				}else if (this[paramDuree] < 15){
 					newClass = imgDureeClassObj[13];
 				}else{
 					newClass = imgDureeClassObj[15];
@@ -362,7 +346,6 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 				this.isPairProg = false;
 				this.owner_initial = (memberInitial ? memberInitial : null);
 				this.duree = null;
-							console.log("la tache pourris 1", this);
 			}
 			regexPP = /\Wforfait\W/;
 			if(this.description.trim().toLowerCase().match(regexPP) != null){
@@ -370,6 +353,7 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			}else{
 				this.isForfait = false;
 			}
+			console.log("ujhcfbzuecbujzhbc",newClass);
 			this.addedClass = newClass;
 			//TODO: Theme switcher
 			this.addedTheme = 'theme_' + '0';
@@ -388,7 +372,6 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 //			members contenus dans _this.postItMemory.projectsMemebers
 function convertIdsToMember(ids,members){
 	var tabInitials = [];
-	console.log(ids);
 	$.each(ids,function(iIndex,iValue){
 		$.each(members,function(mIndex,mValue){
 			if(iValue == mValue.id){
