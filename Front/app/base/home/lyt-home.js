@@ -21,7 +21,8 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				'click #btVisu':'visualizeMemo',
 				'click #btEmpty':'emptyMemory',
 				'click .removeTask':'removeTask',
-				'click .removeStory':'removeStory'
+				'click .removeStory':'removeStory',
+				'change #themeSelect':'changeTheme'
 			},
 
 
@@ -44,7 +45,8 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				btPP: "#btPP",
 				icoHasData : "#icoHasData",
 				btEmpty : "#btEmpty",
-				inputMoreInfo: ".inputLittleTask"
+				inputMoreInfo: ".inputLittleTask",
+				myThemeSelector: '#themeSelect'
 			},
 			//Mémoire des infos relative au sprint en cour.
 			postItMemory:{
@@ -97,7 +99,6 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 				//Fin de trucs a supprimer
 				if(localStorage.getItem('backupedStories') != null){
 					_this.postItMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
-					console.log('zgueg',_this.postItMemory.relativStories);
 					_this.ui.btPrint.removeAttr('disabled');
 					_this.ui.btVisu.removeAttr('disabled');
 					_this.ui.btEmpty.removeAttr('disabled');
@@ -565,6 +566,13 @@ define(['jquery','underscore','marionette', 'backbone', 'bootstrap','../../modul
 						return;
 					}
 				});
+			},
+
+			changeTheme:function(prout, bweuuuh){
+				var classes = $('#postItContainer').attr('class');
+				var tabClasses = classes.split(' ');
+				tabClasses[1] = this.ui.myThemeSelector.find('option:selected').val();
+				$('#postItContainer').attr('class', tabClasses.join(' '));
 			}
 
 		});

@@ -353,6 +353,12 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 			}else{
 				this.isForfait = false;
 			}
+			//Theme switcher
+			if(false){
+				newClass += ' theme_a'
+			}else{
+				newClass += ' theme_b'
+			}
 			console.log("ujhcfbzuecbujzhbc",newClass);
 			this.addedClass = newClass;
 			//TODO: Theme switcher
