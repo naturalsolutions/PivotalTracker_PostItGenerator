@@ -1,12 +1,12 @@
 # post-it-generator
 
 ## Requirements
-Install Node.js and npm
+* Install Node.js and npm
 
-Install Grunt :
+* Install Grunt :
 > npm -g install grunt
 
-Install Bower :
+* Install Bower :
 > npm -g install bower
 
 ## Install Project:
