@@ -10,13 +10,13 @@
 > npm -g install bower
 
 ## Install Project:
-> cd Front
-> bower install
-> npm install
+> cd Front    
+> bower install   
+> npm install   
 
 ## Configuration 
-rename config.default.js to config.js
-add your pivotal key in config.js file
+* rename config.default.js to config.js
+* add your pivotal key in config.js file
 
 ## Launch project in development environment:
 > grunt dev 
