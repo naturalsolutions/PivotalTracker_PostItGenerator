@@ -27,7 +27,7 @@ function getMembership(projectId){
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/memberships",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
@@ -56,7 +56,7 @@ function getAllProjects() {
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
@@ -82,7 +82,7 @@ function getStoriesByProjectAndMember(projectId,member){
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/stories",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
@@ -112,7 +112,7 @@ function getStoriesByIteration(projectId,member,iterationScope, members, project
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/iterations",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
@@ -153,7 +153,7 @@ function getCurrentStoriesByProject(projectId,iterationScope, members, projectNa
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/iterations",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
@@ -192,7 +192,7 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/"+projectId+"/stories/"+storyId+"/tasks",
 		beforeSend: function (xhr) {
-			xhr.setRequestHeader('X-TrackerToken', 'b4a752782f711a7c564221c2b0c2d5dc');
+			xhr.setRequestHeader('X-TrackerToken', pivotalKey);
 		},
 		async: false,
 		type: 'GET',
