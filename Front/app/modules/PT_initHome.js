@@ -211,22 +211,23 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 		if(!this.complete){
 			this.isInSprint = true;
 			var regexPP = /\d(\+\d)+$/;
-			var regexPP2 = /[A-Z]{2}(\+[A-Z]{2})+$/;
+			var regexPP2 = /[A-Z]+(\+[A-Z]+)+$/;
 			//Taches PairPro sans noms
 			var tabDescrInfo = this.description.split('.-');
 			console.log('tabDescrInfo',tabDescrInfo);
 			if(tabDescrInfo.length <= 1 ){
 				tabDescrInfo = this.description.split('. -');
 			}
-			if(tabDescrInfo.length > 1){
+			if(tabDescrInfo.length > 1){				
 				if(this.description.trim().match(regexPP) || this.description.trim().match(regexPP2)){
-					regexPP2 = /[A-Z]{2}(\+[A-Z]{2})/;
+					regexPP2 = /[A-Z]+(\+[A-Z]+)+/;
 					if(this.description.trim().match(regexPP2)){
 						var ownerBrut = regexPP2.exec(this.description.trim());
 						var owners = ownerBrut[0].split("+");
 						this.owner_initial = owners;
+						console.log("ZGUEG200000000000000000",owners);
 						this.description = this.description.trim().replace(regexPP2, "");
-						regexPP = /\d+(\+\d+)/;
+						regexPP = /\d+(\+\d+)+/;
 						if(this.description.trim().match(regexPP)){
 							var tabDureeBrut = regexPP.exec(this.description.trim());
 							console.log('tabDureeBrut',tabDureeBrut);
@@ -251,26 +252,8 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 						//Suite a une demande les taches paiProg sans ressources ne sont pas affichées
 						this.isInSprint = false;
 					}
-					// var tabDureeBrut = regexPP.exec(this.description.trim());
-					// var tabDuree = tabDureeBrut[0].split('+');
-					// var duree = 0;
-					// $.each(tabDuree,function(index,value){
-					// 	duree += parseInt(value);
-					// });
-					// this.duree = duree;
-					// regexPP = /[A-Z]{2}(\+[A-Z]{2})+/;
-					// var ownerBrut = regexPP.exec(this.description.trim());
-					// this.description = this.description.trim().replace(regexPP, "");
-					// var owners = []
-					// if(ownerBrut != null){
-					// 	var owners = ownerBrut[0].split("+");
-					// }
-					// this.owner_initial = owners;
-					// this.isPairProg = true;
-
-
 				}else{
-					regexPP = /[A-Z]{2}(\+[A-Z]{2})+$/;
+					regexPP = /[A-Z]+(\+[A-Z]+)+$/;
 					//Tache Pair programmin
 						regexPP = /(\d)+$/;
 						//Tahe (simple) avec horaires sans Initial
@@ -278,7 +261,7 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 							var tabDureeBrut = regexPP.exec(this.description.trim());
 							this.duree = regexPP.exec(this.description.trim())[0];
 							this.description = this.description.trim().replace(regexPP, "");
-							regexPP = /([A-Z]{2})/;
+							regexPP = /([A-Z]+)/;
 							if(this.description.trim().match(regexPP)){
 								var taskMemeber  = regexPP.exec(this.description.trim())[0];
 								this.owner_initial = taskMemeber;
@@ -290,8 +273,8 @@ function getTasksByStory(projectId,storyId, memberInitial, projectName){
 							}
 							this.isPairProg = false;
 						//TacheSimple avec temps et intital
-						}else if(this.description.trim().match(/([A-Z]{2})+$/)){
-							regexPP = /([A-Z]{2})+$/;
+						}else if(this.description.trim().match(/([A-Z]+)+$/)){
+							regexPP = /([A-Z]+)+$/;
 							if(this.description.trim().match(regexPP)){
 								var taskMemeber  = regexPP.exec(this.description.trim())[0];
 								this.owner_initial = taskMemeber;
