@@ -1,0 +1,31 @@
+<div class="onePostItContainer <%= (isPairProg == true ? "postItTaskPP" : "postItTask") %> <%=addedTheme%> <%=addedClass%>" >
+	<div class="row topContainer">
+		<div class="col-xs-4 text-left">
+			<i name="<%= story_id %>&<%= id %>" class="removeTask glyphicon glyphicon-remove"></i>
+		</div>
+		<div class="col-xs-5">
+			<b><%= isForfait ? 'Forfait' : ''%></b>
+		</div>
+		<div class="col-xs-3 text-right">
+			<p><%= String(story_id).substring(String(story_id).length-3,String(story_id).length) %></p>
+		</div>
+	</div>
+	<div class="row projectContainer">
+		<div class="col-xs-12 text-center">
+			<p><%= project_name %></p>
+		</div>
+	</div>
+	<div class="row TaskTitleContainer">
+		<div class="col-xs-12 text-center">
+			<p><%= (description.length > 100 ? description.substring(0,100) : description) %></p>
+		</div>
+	</div>
+	<div class="row MembershipContainer">
+		<div class="col-xs-6 text-left paddingPostIt">
+			<p><%= (owner_initial.length == 0 ? "und" : owner_initial) %></p>
+		</div>
+		<div class="col-xs-6 text-right paddingPostItRight">
+			<p><%= duree %></p>
+		</div>
+	</div>
+</div>

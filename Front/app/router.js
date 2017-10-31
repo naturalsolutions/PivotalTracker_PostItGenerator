@@ -10,7 +10,9 @@ define(['jquery', 'marionette', 'backbone', 'config'],
 	'use strict';
 	return Marionette.AppRouter.extend({
 		appRoutes: {
-
+			'':'home',
+			'project':'project',
+			'user':'user',
 			'*route(/:page)': 'home',
 		},
 	});

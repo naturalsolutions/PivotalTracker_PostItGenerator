@@ -36,9 +36,13 @@ require.config({
 		'radio'					: '../bower_components/backbone.radio/build/backbone.radio',
 		'bootstrap'				: '../bower_components/bootstrap/dist/js/bootstrap',
 		'sha1'					: '../bower_components/sha1/bin/sha1',
+		'lodash'				: '../bower_components/lodash/dist/lodash',
 
 		'requirejs-text'		: '../bower_components/requirejs-text/text',
 
+		/*==========  Modules PT  ==========*/
+		'initPT'				: './modules/init/PT_initHome', 
+		'postit'				: './modules/postit/PT_postIt',
 
 		'i18n'					: './vendors/i18n/i18next',
 		'print'					: 'modules/jQuery.print',
@@ -86,6 +90,9 @@ require.config({
 			deps: ['jquery'],
 			exports : '$'
 		},
+		intitPT : {
+			deps: ['lodash'],		
+		}
 
 	},
 });

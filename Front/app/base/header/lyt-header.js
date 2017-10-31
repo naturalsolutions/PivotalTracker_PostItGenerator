@@ -14,6 +14,7 @@ function(Marionette, config) {
 		className: 'header',
 		events: {
 			'click #logout' : 'logout',
+			'click #resume' : 'toggleResume'
 		},
 
 		logout: function(){
@@ -30,5 +31,9 @@ function(Marionette, config) {
 				$("#icoHasData").removeClass("hidden");
 			}
 		},
+		toggleResume: function(){
+			console.log('fait des trucs');
+			$('#rgResume').toggleClass('hidden');
+		}
 	});
 });
