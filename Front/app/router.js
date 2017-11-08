@@ -13,6 +13,7 @@ define(['jquery', 'marionette', 'backbone', 'config'],
 			'':'home',
 			'project':'project',
 			'user':'user',
+			'resume':'resume',
 			'*route(/:page)': 'home',
 		},
 	});

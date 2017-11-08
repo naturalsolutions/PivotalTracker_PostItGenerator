@@ -52,34 +52,7 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 				$.each(projects, function () {
 					_this.ui.sltProjects.append('<option value="' + this.id + '">' + this.name + '</option>');
 					_this.sharedMemory.projects.push({id: this.id, name: this.name});
-				});
-				//******************Rapidité a supprimer (code simulant un comportement utilisateur)*****************//
-				/*_this.ui.divMembership.removeClass('hidden');
-				_this.sharedMemory.projectId = 536841;
-				_this.sharedMemory.projectName = "TRACK";
-				var memberships = getMembership(536841);
-				_this.sharedMemory.projectMember = memberships;
-				$.each(memberships, function(){
-					_this.ui.sltMemberships.append('<option value="'+this.id+'">'+this.nom+'</option>');
-				});
-				_this.sharedMemory.memberId = 0;
-				_this.sharedMemory.memberName = "David Lassagne";
-				_this.sharedMemory.memberInitial = "DL";
-				_this.ui.diviteration.removeClass('hidden');
-				_this.ui.sendButton.removeClass('hidden');
-				var scope = "current";
-				var allStories ;
-				if(_this.ui.scope == "" || _this.ui.scope === undefined){
-					scope = 'current';
-					allStories = getStoriesByIteration("536841","1674902",scope, _this.sharedMemory.projectMember,_this.sharedMemory.projectName);
-				}else if(_this.ui.iterationScope != 'icebox'){
-					allStories = getStoriesByIteration("536841","1674902",scope, _this.sharedMemory.projectMember,_this.sharedMemory.projectName);
-				}else{
-					//TODO :: getStoriesFromIcebox
-				}
-				_this.sharedMemory.relativStories = allStories;
-				_this.drawStoriesChoice(allStories);*/
-				//Fin de trucs a supprimer
+				});			
 			},
 
 			//Récupère les membres du projets sélectionner et les affiches dans la list sltMemberships

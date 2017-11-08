@@ -138,7 +138,6 @@ function getAllUsers() {
 			});
 		//}
 	}
-	console.log('zoi', tempUserToProject)
 	return tempUserToProject;
 }
 

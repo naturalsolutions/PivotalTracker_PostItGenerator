@@ -55,23 +55,31 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 			
 			onShow: function (options) {
 				var _this = this;
-				this.$el.i18n();		
-				if (localStorage.getItem('backupedStories') != null) {
-					if (confirm("Des taches existes voulez vous les conserver?")) {
-						_this.sharedMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
-						_this.ui.btPrint.removeAttr('disabled');
-						_this.ui.btVisu.removeAttr('disabled');
-						_this.ui.btEmpty.removeAttr('disabled');
-						_this.ui.btTache.removeAttr('disabled');
-						_this.ui.btStory.removeAttr('disabled');
-						_this.ui.btPP.removeAttr('disabled');
-					}else{
-						//TODO: clean cache
-						localStorage.setItem('backupedStories', null);
-					}
-				} else {
-					_this.sharedMemory.relativStories = [];
-				}
+				this.$el.i18n();	
+				if(_this.sharedMemory.relativStories.length > 0){
+					_this.ui.btPrint.removeAttr('disabled');
+					_this.ui.btVisu.removeAttr('disabled');
+					_this.ui.btEmpty.removeAttr('disabled');
+					_this.ui.btTache.removeAttr('disabled');
+					_this.ui.btStory.removeAttr('disabled');
+					_this.ui.btPP.removeAttr('disabled');
+				}	
+				// if (localStorage.getItem('backupedStories') != null) {
+				// 	if (confirm("Des taches existes voulez vous les conserver?")) {
+				// 		_this.sharedMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
+				// 		_this.ui.btPrint.removeAttr('disabled');
+				// 		_this.ui.btVisu.removeAttr('disabled');
+				// 		_this.ui.btEmpty.removeAttr('disabled');
+				// 		_this.ui.btTache.removeAttr('disabled');
+				// 		_this.ui.btStory.removeAttr('disabled');
+				// 		_this.ui.btPP.removeAttr('disabled');
+				// 	}else{
+				// 		//TODO: clean cache
+				// 		localStorage.setItem('backupedStories', null);
+				// 	}
+				// } else {
+				// 	_this.sharedMemory.relativStories = [];
+				// }
 			},
 
 			//Affiche les différentes stories dans des vues avec des checkboxes de selection
