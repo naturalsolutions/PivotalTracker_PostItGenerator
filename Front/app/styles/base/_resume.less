@@ -1,10 +1,51 @@
-
-table, th, td{
-	border: 1px solid black;
-	
-}
-table{
-	th{
-
-	}
-}
+table.purpleHorizon {
+	margin-top: 50px;
+	border: 4px solid #792396;
+	background-color: #555555;
+	width: 100%;
+	text-align: center;
+	border-collapse: collapse;
+  }
+  th{
+	  color: rgb(190, 186, 186);
+  }
+  table.purpleHorizon td, table.purpleHorizon th {
+	border: 1px solid #555555;
+	padding: 5px 2px;
+  }
+  table.purpleHorizon tbody td {
+	font-size: 13px;
+	font-weight: bold;
+	color: #FFFFFF;
+  }
+  table.purpleHorizon tr:nth-child(even) {
+	background: #CC3BFC;
+  }
+  table.purpleHorizon thead {
+	background: #792396;
+	border-bottom: 4px solid #792396;
+  }
+  table.purpleHorizon thead th {
+	font-size: 19px;
+	font-weight: bold;
+	color: #FFFFFF;
+	text-align: left;
+	border-left: 2px solid #792396;
+  }
+  table.purpleHorizon thead th:first-child {
+	border-left: none;
+  }
+  
+  table.purpleHorizon tfoot {
+	font-size: 13px;
+	font-weight: bold;
+	color: #FFFFFF;
+	background: #CE3CFF;
+	background: -moz-linear-gradient(top, #da6dff 0%, #d34fff 66%, #CE3CFF 100%);
+	background: -webkit-linear-gradient(top, #da6dff 0%, #d34fff 66%, #CE3CFF 100%);
+	background: linear-gradient(to bottom, #da6dff 0%, #d34fff 66%, #CE3CFF 100%);
+	border-top: 5px solid #792396;
+  }
+  table.purpleHorizon tfoot td {
+	font-size: 13px;
+  }
