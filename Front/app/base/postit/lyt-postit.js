@@ -265,45 +265,29 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 				var _this = this;
 				var selectedSories = [];
 				var isPresent = false;
-				if (JSON.parse(localStorage.getItem('backupedStories'))) {
-					var backupedStories = JSON.parse(localStorage.getItem('backupedStories'));
-				} else {
-					var backupedStories = [];
-				}
-				var tabLsStories = backupedStories.map(o => o.id);				
-				var tabRelStories = _this.sharedMemory.relativStories.map(o => o.id);			
-				var currTasks = [].concat.apply([],backupedStories.map(o => o.tasks).concat()).map(o => o.id);
-				var tabStoriesToMem = tabRelStories.filter(o => tabLsStories.indexOf(o) < 0);
-				var tabTasksToUp = [].concat.apply([],_this.sharedMemory.relativStories.map(o => o.tasks)).filter(o => currTasks.indexOf(o.id) >= 0);
-				console.log('le finish');
-				for(var i in tabTasksToUp){
-					var index = backupedStories.findIndex(x => x.id == tabTasksToUp[i].story_id);
-					for(var j in backupedStories[index].tasks){
-						if(backupedStories[index].tasks[j].id == tabTasksToUp[i].id){
-							backupedStories[index].tasks[j] = tabTasksToUp[i];
+				var temp = JSON.parse(localStorage.getItem('backupedStories'));
+				if (temp) {
+					var backupedStories = temp;
+					var tabLsStories = backupedStories.map(o => o.id);				
+					var tabRelStories = _this.sharedMemory.relativStories.map(o => o.id);			
+					var currTasks = [].concat.apply([],backupedStories.map(o => o.tasks).concat()).map(o => o.id);
+					var tabStoriesToMem = tabRelStories.filter(o => tabLsStories.indexOf(o) < 0);
+					var tabTasksToUp = [].concat.apply([],_this.sharedMemory.relativStories.map(o => o.tasks)).filter(o => currTasks.indexOf(o.id) >= 0);
+					for(var i in tabTasksToUp){
+						var index = backupedStories.findIndex(x => x.id == tabTasksToUp[i].story_id);
+						for(var j in backupedStories[index].tasks){
+							if(backupedStories[index].tasks[j].id == tabTasksToUp[i].id){
+								backupedStories[index].tasks[j] = tabTasksToUp[i];
+							}
 						}
 					}
+					
+					backupedStories.push(_this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0))
+				} else {
+					var backupedStories = _this.sharedMemory.relativStories;
 				}
-				console.log('sto to add', _this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0));
-				
-				backupedStories.push(_this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0))
-				
-				// $.each(_this.sharedMemory.relativStories, function () {
-				// 	var story = this;
-				// 	if (this.isInSprint) {
-				// 		isPresent = false;
-				// 		$.each(backupedStories, function () {
-				// 			if (this.id == story.id) {
-				// 				isPresent = true;
-				// 			}
-				// 		});
-				// 		if (!isPresent) {
-				// 			backupedStories.push(this);
-
-				// 		}
-				// 	}
-				// });
 				localStorage.setItem('backupedStories', JSON.stringify(backupedStories));
+				console.log(backupedStories);
 				_this.ui.btEmpty.removeAttr('disabled');
 				alert("Données sauvegardée");
 			},
