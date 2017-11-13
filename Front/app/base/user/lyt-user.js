@@ -24,25 +24,46 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'initPT', 'lodash', 'b
 				divStories: '#divStories',
 				validScrum: '#validScrum',
 			},
-			initialize:function(options){
+			initialize: function (options) {
 				this.sharedMemory = options.mem;
 			},
 
 			onShow: function (options) {
 				var _this = this;
 				this.$el.i18n();
-				this.users = getAllUsers();
-				$.each(this.users, function () {
-					_this.ui.sltMemberships.append('<option value="' + this.id + '">' + this.name + '</option>');
-				});
+				if(localStorage.getItem('users') != null){
+					_this.sharedMemory.users = JSON.parse(localStorage.getItem('users'));
+					$.each(_this.sharedMemory.users, function () {
+						_this.ui.sltMemberships.append('<option value="' + this.id + '">' + this.name + '</option>');
+					});
+				}else if (!this.sharedMemory.users){
+
+					//if(this.sharedMemory.users.length < 0) {	
+					this.toggleSpinner();				
+					setTimeout(function(){
+						_this.sharedMemory.users = getAllUsers();
+						localStorage.setItem('users', JSON.stringify(_this.sharedMemory.users));
+						$.each(_this.sharedMemory.users, function () {
+							_this.ui.sltMemberships.append('<option value="' + this.id + '">' + this.name + '</option>');
+						});
+						_this.toggleSpinner();
+					},0);
+					//console.log(Backbone.trigger('getUsers'))
+				}else{
+					$.each(this.sharedMemory.users, function () {
+						_this.ui.sltMemberships.append('<option value="' + this.id + '">' + this.name + '</option>');
+					});
+				}
 			},
 
 			//Afficvhe les paramètre de scope
 			showParam: function (e) {
 				var _this = this;
 				this.sharedMemory.memberId = $(_this.ui.sltMemberships).val();
+				this.sharedMemory.projectId = $(_this.ui.sltProjects).val();
+				this.sharedMemory.projectName = $('#sltProjects option:selected').text();
 				var tabNameInfo = $(_this.ui.sltMemberships).find(':selected').text().split('-');
-				var currentUser = this.users.find(x => x.id == _this.sharedMemory.memberId);
+				var currentUser = this.sharedMemory.users.find(x => x.id == _this.sharedMemory.memberId);
 				this.sharedMemory.memberName = currentUser.name;
 				this.sharedMemory.memberInitial = currentUser.initials;
 				//this.ui.diviteration.removeClass('hidden');
@@ -61,14 +82,14 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'initPT', 'lodash', 'b
 				if (userId != 0) {
 					if (scope == "" || scope === undefined) {
 						scope = 'current';
-						allStories = getStoriesByIteration(_this.ui.sltProjects.val(), userId, scope, _this.user.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
+						allStories = getStoriesByIteration(_this.ui.sltProjects.val(), userId, scope, _this.sharedMemory.users.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
 					} else if (_this.ui.iterationScope != 'icebox') {
-						allStories = getStoriesByIteration(_this.ui.sltProjects.val(), userId, scope, _this.user.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
+						allStories = getStoriesByIteration(_this.ui.sltProjects.val(), userId, scope, _this.sharedMemory.users.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
 					} else {
 						//TODO :: getStoriesFromIcebox
 					}
 				} else {
-					allStories = getCurrentStoriesByProject(_this.ui.sltProjects.val(), 'current', _this.user.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
+					allStories = getCurrentStoriesByProject(_this.ui.sltProjects.val(), 'current', _this.sharedMemory.users.find(x => x.id == userId).initials, _this.sharedMemory.projectName);
 				}
 				_this.sharedMemory.relativStories = _this.sharedMemory.relativStories.concat(allStories);
 				_this.drawStoriesChoice(allStories);
@@ -128,6 +149,7 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'initPT', 'lodash', 'b
 				var _this = this;
 				var container = $(e.currentTarget).parent();
 				var storyId = container.attr("id").split("divStoryContainer_")[1];
+				console.log('gettasks', container, storyId);
 				if (container.children().find('div[id^=divTaskContainer_]').length) {
 					container.find('div').remove();
 					$.each(_this.sharedMemory.relativStories, function () {
@@ -216,27 +238,31 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'initPT', 'lodash', 'b
 				});
 			},
 
-			sendStoryPostIt: function(){
-				console.log('waneuguenne',Backbone.trigger('getMemory'));
-				
+			sendStoryPostIt: function () {
+				console.log('waneuguenne', Backbone.trigger('getMemory'));
+
 				Backbone.trigger('createStoryPostIt');
 			},
 
-			feedProjects: function(e){
+			feedProjects: function (e) {
 				var myElem = $("#" + e.currentTarget.id);
 				var value = myElem.val();
-				var allProjects = this.users.find(x => x.id == value).projects;
+				var allProjects = this.sharedMemory.users.find(x => x.id == value).projects;
 				console.log('lesprojets', allProjects);
 				var selectProjects = $(this.ui.sltProjects);
 				selectProjects.children().remove();
 
-				for(var i in allProjects){
+				for (var i in allProjects) {
 					selectProjects.append('<option value="' + allProjects[i].id + '">' + allProjects[i].name + '</option>');
 				}
 				var copntainer = $(this.ui.divProjects)
-				if(copntainer.hasClass('hidden')){
+				if (copntainer.hasClass('hidden')) {
 					copntainer.removeClass('hidden')
 				}
+			},
+
+			toggleSpinner: function(){				
+				$('.spinContainer').toggleClass('hidden');
 			}
 		});
 	});

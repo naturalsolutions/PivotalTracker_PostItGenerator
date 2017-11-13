@@ -202,7 +202,8 @@ function getStoriesByIteration(projectId, member, iterationScope, members, proje
 		if (this.current_state != 'accepted' && this.current_state != 'finished' && this.current_state != 'delivered') {
 			if ($.inArray(parseInt(member), this.owner_ids) != -1) {
 				this.isInSprint = false;
-				this.owner_initials = convertIdsToMember(this.owner_ids, members);
+				console.log('ghjn, ', this.owner_ids, members )
+				this.owner_initials = members;//convertIdsToMember(this.owner_ids, members);
 				this.priority = cptPrio;
 				cptPrio++;
 				this.project_name = projectName;
@@ -279,7 +280,7 @@ function getCurrentStoriesByProject(projectId, iterationScope, members, projectN
 	$.each(myStoriesTemp[0].stories, function () {
 		if (this.current_state != 'accepted' && this.current_state != 'finished' && this.current_state != 'delivered') {
 			this.isInSprint = false;
-			this.owner_initials = convertIdsToMember(this.owner_ids, members);
+			this.owner_initials = members;//convertIdsToMember(this.owner_ids, members);
 			this.priority = cptPrio;
 			cptPrio++;
 			this.project_name = projectName;
@@ -296,6 +297,7 @@ function getCurrentStoriesByProject(projectId, iterationScope, members, projectN
 ///Return : [objects] repésentant les tache pour une story
 function getTasksByStory(projectId, storyId, memberInitial, projectName) {
 	var mytasks = [];
+	console.log('les args', arguments);
 	$.ajax({
 		url: "https://www.pivotaltracker.com/services/v5/projects/" + projectId + "/stories/" + storyId + "/tasks",
 		beforeSend: function (xhr) {
@@ -472,6 +474,7 @@ function getTasksByStory(projectId, storyId, memberInitial, projectName) {
 			this.addedTheme = 'theme_' + '0';
 
 			this.project_name = projectName;
+			console.log('zirtujhbazertiuhazertpohji', this.project_name)
 			if (this.isInSprint) {
 				mytasks.push(this);
 			}
@@ -485,7 +488,9 @@ function getTasksByStory(projectId, storyId, memberInitial, projectName) {
 //			members contenus dans _this.postItMemory.projectsMemebers
 function convertIdsToMember(ids, members) {
 	var tabInitials = [];
+	console.log('arguments', arguments);
 	$.each(ids, function (iIndex, iValue) {
+		console.log('iValue == mValue.id', iValue , iIndex)
 		$.each(members, function (mIndex, mValue) {
 			if (iValue == mValue.id) {
 				tabInitials.push(mValue.initials);

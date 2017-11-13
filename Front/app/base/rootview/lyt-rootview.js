@@ -18,15 +18,26 @@ function(Marionette, TransitionRegion, LytHeader, LytProject, LytPostit) {
 			rgFooter: 'footer'
 		},
 
-		
+		storedUsers:[],
 
 		initialize: function(){
 			
 		},
 
-		render: function(options){			
+		render: function(options){		
+			Backbone.on('setUsers', this.storeUsers, this);
+			Backbone.on('getUsers');
+			
 			Marionette.LayoutView.prototype.render.apply(this, options);
 			this.rgHeader.show( new LytHeader());
-		},		
+		},
+
+		setUsers:function(options){
+			this.storedUsers = options;
+		},	
+
+		getUsers: function(){
+			return this.storedUsers;
+		}
 	});
 });
