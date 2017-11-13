@@ -28,9 +28,11 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'lodash']
 				if (this.sharedMemory.projects && this.sharedMemory.projects.length > 0) {
 					this.addProjectLines()
 				} else if (this.sharedMemory.relativStories && this.sharedMemory.relativStories.length > 0) {
+					console.log('dfafd', this.sharedMemory.relativStories)
 					var users = [].concat.apply([], this.sharedMemory.relativStories
 						.map(o => o.owner_initials))
 						.filter((value, index, self) => self.indexOf(value) === index);
+					users = _.chain(users.concat.apply([], this.sharedMemory.relativStories.map(o => o.tasks)).map(o => o.owner_initial)).uniq().value();
 					var projects = [].concat.apply([], this.sharedMemory.relativStories
 						.map(function (o) {
 							return { id: o.project_id, name: o.project_name }
@@ -40,7 +42,7 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'lodash']
 							return JSON.stringify(e);
 						})
 					this.users = users;
-					console.log("les users", this.sharedMemory.relativStories)
+					console.log("showtime", this.users)
 					this.projects = projects;
 					this.addProjectLines();
 					this.addUsersColumns();

@@ -28,8 +28,7 @@ define(['marionette', 'config',
 					if (true) {
 					//Bonne ligne a conserver
 					//if (confirm("Des taches existes voulez vous les conserver?")) {
-						this.sharedMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
-						
+						this.sharedMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories')).filter(o => !Array.isArray(o));						
 					}else{
 						//TODO: clean cache
 						localStorage.setItem('backupedStories', null);

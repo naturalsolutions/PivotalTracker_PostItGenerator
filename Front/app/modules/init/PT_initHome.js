@@ -203,7 +203,7 @@ function getStoriesByIteration(projectId, member, iterationScope, members, proje
 			if ($.inArray(parseInt(member), this.owner_ids) != -1) {
 				this.isInSprint = false;
 				console.log('ghjn, ', this.owner_ids, members )
-				this.owner_initials = members;//convertIdsToMember(this.owner_ids, members);
+				this.owner_initials = convertIdsToMember(this.owner_ids, members);
 				this.priority = cptPrio;
 				cptPrio++;
 				this.project_name = projectName;
@@ -280,7 +280,8 @@ function getCurrentStoriesByProject(projectId, iterationScope, members, projectN
 	$.each(myStoriesTemp[0].stories, function () {
 		if (this.current_state != 'accepted' && this.current_state != 'finished' && this.current_state != 'delivered') {
 			this.isInSprint = false;
-			this.owner_initials = members;//convertIdsToMember(this.owner_ids, members);
+			this.owner_initials = convertIdsToMember(this.owner_ids, members);
+			//console.log('convertIdsToMember(this.owner_ids, members)',convertIdsToMember(this.owner_ids, members));
 			this.priority = cptPrio;
 			cptPrio++;
 			this.project_name = projectName;

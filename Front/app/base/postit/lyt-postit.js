@@ -250,29 +250,21 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 					pTaskPP: 0,
 				}
 				$("#postItContainer").children().remove();
-				var allStories = [];
-				if (_this.sharedMemory.backUpStories && _this.sharedMemory.backUpStories.length) {
-					alert("c'est pas bon");
-					allStories =_this.sharedMemory.backUpStories;
-				} else {
-					allStories =_this.sharedMemory.relativStories;
-				}
+				var allStories = _this.sharedMemory.relativStories;
 				console.log("toprint", allStories);
 				var infos = runDrawing(allStories, true);
 			},
 
 			memoriseStory: function () {
 				var _this = this;
-				var selectedSories = [];
-				var isPresent = false;
-				var temp = JSON.parse(localStorage.getItem('backupedStories'));
+				var temp = JSON.parse(localStorage.getItem('backupedStories')).filter(o => !Array.isArray(o));
 				if (temp) {
 					var backupedStories = temp;
 					var tabLsStories = backupedStories.map(o => o.id);				
-					var tabRelStories = _this.sharedMemory.relativStories.map(o => o.id);			
-					var currTasks = [].concat.apply([],backupedStories.map(o => o.tasks).concat()).map(o => o.id);
+					var tabRelStories = _this.sharedMemory.relativStories.filter(o => o.isInSprint == true).map(o => o.id);			
+					var currTasks = [].concat.apply([],backupedStories.map(o => o.tasks).concat());
 					var tabStoriesToMem = tabRelStories.filter(o => tabLsStories.indexOf(o) < 0);
-					var tabTasksToUp = [].concat.apply([],_this.sharedMemory.relativStories.map(o => o.tasks)).filter(o => currTasks.indexOf(o.id) >= 0);
+					var tabTasksToUp = [].concat.apply([],_this.sharedMemory.relativStories.filter(o => o.isInSprint == true).map(o => o.tasks)).filter(o => currTasks.indexOf(o.id) >= 0);
 					for(var i in tabTasksToUp){
 						var index = backupedStories.findIndex(x => x.id == tabTasksToUp[i].story_id);
 						for(var j in backupedStories[index].tasks){
@@ -282,12 +274,13 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 						}
 					}
 					
-					backupedStories.push(_this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0))
+					backupedStories = backupedStories.concat(_this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0))
 				} else {
 					var backupedStories = _this.sharedMemory.relativStories;
 				}
 				localStorage.setItem('backupedStories', JSON.stringify(backupedStories));
 				console.log(backupedStories);
+				//TODO : ptete la maj du tableau #resume; depénd de quand il est mis a jour
 				_this.ui.btEmpty.removeAttr('disabled');
 				alert("Données sauvegardée");
 			},
@@ -344,7 +337,6 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 					})
 				}
 			},
-			//TODO : Finir!
 			removeStory: function (elem) {
 				var r = confirm("Voulez vous supprimer la story et toute ses tâchesde cette plannification?");
 				var theElem = $(elem.currentTarget);
