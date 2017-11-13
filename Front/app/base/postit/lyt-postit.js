@@ -64,22 +64,6 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 					_this.ui.btStory.removeAttr('disabled');
 					_this.ui.btPP.removeAttr('disabled');
 				}	
-				// if (localStorage.getItem('backupedStories') != null) {
-				// 	if (confirm("Des taches existes voulez vous les conserver?")) {
-				// 		_this.sharedMemory.relativStories = JSON.parse(localStorage.getItem('backupedStories'));
-				// 		_this.ui.btPrint.removeAttr('disabled');
-				// 		_this.ui.btVisu.removeAttr('disabled');
-				// 		_this.ui.btEmpty.removeAttr('disabled');
-				// 		_this.ui.btTache.removeAttr('disabled');
-				// 		_this.ui.btStory.removeAttr('disabled');
-				// 		_this.ui.btPP.removeAttr('disabled');
-				// 	}else{
-				// 		//TODO: clean cache
-				// 		localStorage.setItem('backupedStories', null);
-				// 	}
-				// } else {
-				// 	_this.sharedMemory.relativStories = [];
-				// }
 			},
 
 			//Affiche les différentes stories dans des vues avec des checkboxes de selection
@@ -215,7 +199,6 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 							//selectedSories = selectedSories.concat(_this.sharedMemory.relativStories);
 						}
 					});
-					console.log('Schtroudel After',_this.sharedMemory.relativStories);
 					drawStoryPostIt(selectedSories, $("#postItContainer"));
 				} else {
 					alert("Veuillez remplir les informations manquantes dans le panel de gauche");
@@ -287,23 +270,39 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 				} else {
 					var backupedStories = [];
 				}
-				console.log('_this.sharedMemory.backupedStories', backupedStories);
-				console.log('_this.sharedMemory.relativStories',_this.sharedMemory.relativStories);
-				$.each(_this.sharedMemory.relativStories, function () {
-					var story = this;
-					if (this.isInSprint) {
-						isPresent = false;
-						$.each(backupedStories, function () {
-							if (this.id == story.id) {
-								isPresent = true;
-							}
-						});
-						if (!isPresent) {
-							backupedStories.push(this);
-
+				var tabLsStories = backupedStories.map(o => o.id);				
+				var tabRelStories = _this.sharedMemory.relativStories.map(o => o.id);			
+				var currTasks = [].concat.apply([],backupedStories.map(o => o.tasks).concat()).map(o => o.id);
+				var tabStoriesToMem = tabRelStories.filter(o => tabLsStories.indexOf(o) < 0);
+				var tabTasksToUp = [].concat.apply([],_this.sharedMemory.relativStories.map(o => o.tasks)).filter(o => currTasks.indexOf(o.id) >= 0);
+				console.log('le finish');
+				for(var i in tabTasksToUp){
+					var index = backupedStories.findIndex(x => x.id == tabTasksToUp[i].story_id);
+					for(var j in backupedStories[index].tasks){
+						if(backupedStories[index].tasks[j].id == tabTasksToUp[i].id){
+							backupedStories[index].tasks[j] = tabTasksToUp[i];
 						}
 					}
-				});
+				}
+				console.log('sto to add', _this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0));
+				
+				backupedStories.push(_this.sharedMemory.relativStories.filter(o => tabStoriesToMem.indexOf(o.id) >= 0))
+				
+				// $.each(_this.sharedMemory.relativStories, function () {
+				// 	var story = this;
+				// 	if (this.isInSprint) {
+				// 		isPresent = false;
+				// 		$.each(backupedStories, function () {
+				// 			if (this.id == story.id) {
+				// 				isPresent = true;
+				// 			}
+				// 		});
+				// 		if (!isPresent) {
+				// 			backupedStories.push(this);
+
+				// 		}
+				// 	}
+				// });
 				localStorage.setItem('backupedStories', JSON.stringify(backupedStories));
 				_this.ui.btEmpty.removeAttr('disabled');
 				alert("Données sauvegardée");
@@ -319,15 +318,11 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 				$("#postItContainer").children().remove();
 				var _this = this;
 				var allStories = [];
-				console.log('this.sharedMemory',this.sharedMemory)			
 				if (_this.sharedMemory.backUpStories && _this.sharedMemory.backUpStories.length) {
-					console.log('1');
 					allStories =_this.sharedMemory.backUpStories;
 				} else {
-					console.log('2');					
 					allStories =_this.sharedMemory.relativStories;
 				}
-				console.log('allstories', allStories);
 				var infos = runDrawing(allStories, false);
 			},
 
