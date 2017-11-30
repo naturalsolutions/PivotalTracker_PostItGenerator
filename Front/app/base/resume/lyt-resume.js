@@ -32,6 +32,7 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'lodash']
 					var users = [].concat.apply([], this.sharedMemory.relativStories
 						.map(o => o.owner_initials))
 						.filter((value, index, self) => self.indexOf(value) === index);
+						console.log(users, this.sharedMemory.relativStories);
 					users = _.chain(users.concat.apply([], this.sharedMemory.relativStories.map(o => o.tasks)).map(o => o.owner_initial)).uniq().value();
 					var projects = [].concat.apply([], this.sharedMemory.relativStories
 						.map(function (o) {
