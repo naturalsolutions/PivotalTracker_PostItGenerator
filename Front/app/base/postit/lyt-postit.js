@@ -257,7 +257,10 @@ define(['jquery', 'underscore', 'marionette', 'backbone', 'bootstrap', 'initPT',
 
 			memoriseStory: function () {
 				var _this = this;
-				var temp = JSON.parse(localStorage.getItem('backupedStories')).filter(o => !Array.isArray(o));
+				var parsed = JSON.parse(localStorage.getItem('backupedStories'));
+				if(parsed != null){
+					var temp = parsed.filter(o => !Array.isArray(o));
+				}
 				if (temp) {
 					var backupedStories = temp;
 					var tabLsStories = backupedStories.map(o => o.id);				
